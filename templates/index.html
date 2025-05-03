@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevGuide AI - {{ current_module }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .search-results {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .search-highlight {
+            background-color: yellow;
+        }
+        .footnote-link {
+            color: #2563eb;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 0.75em;
+            vertical-align: super;
+            margin-left: 0.2em;
+        }
+        .footnote-link:hover {
+            text-decoration: underline;
+        }
+        .footnote-backref {
+            margin-left: 0.75rem;
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+        .footnote-backref:hover {
+            text-decoration: underline;
+        }
+        .footnotes-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e5e7eb;
+            background-color: #f9fafb;
+            padding: 2rem;
+            border-radius: 0.5rem;
+        }
+        .footnote-item {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #4b5563;
+            padding-left: 1rem;
+        }
+        .footnote-number {
+            min-width: 2rem;
+            color: #2563eb;
+            font-weight: 500;
+        }
+        .footnote-content {
+            flex: 1;
+            line-height: 1.5;
+        }
+        /* Add new glossary styles */
+        .glossary-term {
+            font-weight: 600;
+            color: #1a365d;
+            margin-bottom: 0.5rem;
+        }
+        .glossary-definition {
+            margin-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .glossary-section dt {
+            font-weight: 600;
+            color: #1a365d;
+            margin-top: 1rem;
+            scroll-margin-top: 100px;
+        }
+        .glossary-section dd {
+            margin-left: 1rem;
+            margin-bottom: 1rem;
+        }
+        .glossary-link {
+            color: #2563eb;
+            text-decoration: none;
+            border-bottom: 1px dotted #2563eb;
+        }
+        .glossary-link:hover {
+            text-decoration: none;
+            border-bottom: 1px solid #2563eb;
+        }
+        /* Style the list within the specific Works Cited section */
+        .works-cited-section ol {
+            list-style-type: decimal;
+            padding-left: 2.5rem; /* Adjust padding for alignment */
+            margin-top: 1rem;
+        }
+        .works-cited-section li {
+            margin-bottom: 0.75rem; /* Space between items */
+            padding-left: 0.5rem; /* Space between number and text */
+        }
+        .works-cited-section li a {
+            color: #2563eb; /* blue-600 */
+            text-decoration: none;
+        }
+        .works-cited-section li a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow">
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">DevGuide AI</h1>
+                        <p class="mt-1 text-sm text-gray-500">{{ current_module }}</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <!-- All Modules Button -->
+                        <a href="/modules" class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">All Modules</a>
+                        <!-- Module Selector -->
+                        <div>
+                            <select id="moduleSelect" class="px-2 py-1 border rounded">
+                                {% for module in modules %}
+                                <option value="{{ module }}" {% if module == current_module %}selected{% endif %}>{{ module }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!-- Add Glossary Button -->
+                        <a href="/?module={{ current_module }}&section=Glossary of Terms" 
+                           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            Glossary
+                        </a>
+                        <!-- Search Box -->
+                        <div class="relative w-96">
+                            <input type="text" 
+                                   id="search"
+                                   placeholder="Search content..." 
+                                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <div id="searchResults" class="absolute w-full mt-2 bg-white rounded-lg shadow-lg hidden search-results">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            {% if error %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <span class="block sm:inline">{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <div class="flex gap-6">
+                <!-- Section Navigation -->
+                <div class="w-1/4">
+                    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                        <div class="px-4 py-5 sm:px-6">
+                            <h2 class="text-lg font-medium text-gray-900">Table of Contents</h2>
+                        </div>
+                        <div class="border-t border-gray-200">
+                            <nav class="flex flex-col">
+                                {% for section in hierarchy %}
+                                <div class="border-b border-gray-100">
+                                    <a href="/?module={{ current_module }}&section={{ section.title|urlencode }}" 
+                                       class="px-4 py-3 block font-medium hover:bg-gray-50 {% if section.title == current_section %}bg-blue-50 border-l-4 border-blue-500{% endif %}">
+                                        {{ section.title }}
+                                    </a>
+                                    {% for subsection in section.subsections %}
+                                    <a href="/?module={{ current_module }}&section={{ subsection|urlencode }}" 
+                                       class="px-8 py-2 block text-sm hover:bg-gray-50 {% if subsection == current_section %}bg-blue-50 border-l-4 border-blue-500{% endif %}">
+                                        {{ subsection }}
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                                {% endfor %}
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Area -->
+                <div class="w-3/4">
+                    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                        <div class="px-4 py-5 sm:px-6">
+                            <!-- Breadcrumb Navigation -->
+                            <nav class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
+                                <a href="/modules" class="hover:underline">All Modules</a>
+                                <span>/</span>
+                                <a href="/?module={{ current_module }}" class="hover:underline">{{ current_module }}</a>
+                                <span>/</span>
+                                <span class="font-medium">{{ current_section }}</span>
+                            </nav>
+                            <h2 class="text-xl font-semibold text-gray-900">{{ current_section }}</h2>
+                        </div>
+                        <div class="border-t border-gray-200">
+                            <div class="px-4 py-5 sm:p-6">
+                                <div class="prose max-w-none {% if current_section == 'Glossary of Terms' %}glossary-section{% endif %} {% if current_section == 'Works cited' %}works-cited-section{% endif %}">
+                                    {% if section_content %}
+                                        {% if current_section == 'Glossary of Terms' %}
+                                            <dl>
+                                            {% for paragraph in section_content.split('\n') %}
+                                                {% if ':' in paragraph %}
+                                                    {% set term_def = paragraph.split(':', 1) %}
+                                                    <dt id="{{ term_def[0]|trim }}">{{ term_def[0]|trim }}</dt>
+                                                    <dd>{{ term_def[1] | safe }}</dd>
+                                                {% else %}
+                                                    <!-- Render non-term lines if necessary -->
+                                                    <p class="mb-4">{{ paragraph | safe }}</p> 
+                                                {% endif %}
+                                            {% endfor %}
+                                            </dl>
+                                        {% elif current_section == 'Works cited' %}
+                                            <!-- Handle Works Cited: Assume each line is a list item -->
+                                            <ol>
+                                                {% for item in section_content.split('\n') %}
+                                                    {% if item.strip() %}
+                                                        <li>{{ item | safe }}</li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </ol>
+                                        {% else %}
+                                            {% for paragraph in section_content.split('\n') %}
+                                                <p class="mb-4">{{ paragraph | safe }}</p>
+                                            {% endfor %}
+                                        {% endif %}
+
+                                        {% if section_footnotes %}
+                                        <!-- Footnotes section removed as per request -->
+                                        {% endif %}
+                                    {% else %}
+                                        <p class="text-gray-500">No content available for this section.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Floating Chat Button -->
+                        <button id="chatToggleBtn" class="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M8 10h.01M12 10h.01M16 10h.01M21 12c0-4.97-4.03-9-9-9S3 7.03 3 12c0 1.5.42 2.9 1.15 4.1L3 21l4.9-1.15A8.962 8.962 0 0012 21c4.97 0 9-4.03 9-9z"/>
+                            </svg>
+                        </button>
+
+                        <!-- Chat Panel -->
+                        <div id="chatPanel" class="fixed bottom-0 right-0 transform translate-y-full transition-transform duration-300 ease-in-out bg-white w-full max-w-md h-3/4 shadow-xl rounded-t-lg flex flex-col">
+                            <div class="flex items-center justify-between p-4 border-b">
+                                <h3 class="text-lg font-medium text-gray-900">Ask the AI</h3>
+                                <button id="modeToggle" title="Switch to Learning Mode to have a pointed, Socratic conversation with the AI." class="px-3 py-1 bg-gray-200 text-gray-700 rounded focus:outline-none">Chat Mode</button>
+                                <button id="chatCloseBtn" class="text-gray-500 hover:text-gray-700 focus:outline-none">&times;</button>
+                            </div>
+                            <div id="chatWindow" class="flex-1 overflow-y-auto p-4 bg-gray-50"></div>
+                            <div class="p-4 border-t flex">
+                                <input id="chatInput" type="text" placeholder="Type your question..." class="flex-grow px-3 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <button id="sendBtn" class="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700">Send</button>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Controls -->
+                        <div class="border-t border-gray-200 px-4 py-3 flex justify-between items-center bg-gray-50">
+                            {% if prev_section %}
+                            <a href="/?module={{ current_module }}&section={{ prev_section|urlencode }}" 
+                               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                ← Previous
+                            </a>
+                            {% else %}
+                            <div></div>
+                            {% endif %}
+
+                            {% if next_section %}
+                            <a href="/?module={{ current_module }}&section={{ next_section|urlencode }}" 
+                               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                Next →
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript for Search -->
+    <script>
+        const searchInput = document.getElementById('search');
+        const searchResults = document.getElementById('searchResults');
+        const moduleSelect = document.getElementById('moduleSelect');
+        let searchTimeout;
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length < 2) {
+                searchResults.classList.add('hidden');
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                fetch(`/search?module=${encodeURIComponent(moduleSelect.value)}&q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(results => {
+                        if (results.length > 0) {
+                            searchResults.innerHTML = results.map(result => `
+                                <a href="/?module=${encodeURIComponent(moduleSelect.value)}&section=${encodeURIComponent(result.section)}" 
+                                   class="block px-4 py-2 hover:bg-gray-100 border-b">
+                                    <div class="font-medium text-sm text-gray-900">${result.section}</div>
+                                    <div class="text-sm text-gray-600">${result.context}</div>
+                                </a>
+                            `).join('');
+                            searchResults.classList.remove('hidden');
+                        } else {
+                            searchResults.innerHTML = `
+                                <div class="px-4 py-2 text-sm text-gray-500">
+                                    No results found
+                                </div>
+                            `;
+                            searchResults.classList.remove('hidden');
+                        }
+                    });
+            }, 300);
+        });
+
+        // Hide search results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchResults.contains(e.target) && e.target !== searchInput) {
+                searchResults.classList.add('hidden');
+            }
+        });
+
+        // Smooth scroll to footnotes
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('a[href^="#"]')) {
+                e.preventDefault();
+                const targetId = e.target.getAttribute('href').slice(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+    </script>
+
+    <script>
+    // Floating Chat UI logic
+    const chatToggleBtn = document.getElementById('chatToggleBtn');
+    const chatPanel = document.getElementById('chatPanel');
+    const chatCloseBtn = document.getElementById('chatCloseBtn');
+    const modeToggleBtn = document.getElementById('modeToggle');
+    const chatWindow = document.getElementById('chatWindow');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    // Open/close panel
+    chatToggleBtn.addEventListener('click', () => {
+      chatPanel.classList.toggle('translate-y-full');
+      renderHistory(currentMode);
+    });
+    chatCloseBtn.addEventListener('click', () => {
+      chatPanel.classList.add('translate-y-full');
+    });
+
+    // Mode toggle
+    let currentMode = 'chat';
+    const chatHistories = { chat: [], learning: [] };
+    modeToggleBtn.addEventListener('click', () => {
+      currentMode = currentMode === 'chat' ? 'learning' : 'chat';
+      modeToggleBtn.textContent = currentMode === 'chat' ? 'Chat Mode' : 'Learning Mode';
+      modeToggleBtn.title = currentMode === 'chat'
+        ? 'Switch to Learning Mode to have a pointed, Socratic conversation with the AI.'
+        : 'Switch back to Chat Mode for direct answers from the AI.';
+      renderHistory(currentMode);
+    });
+
+    // Render history function
+    function renderHistory(mode) {
+      chatWindow.innerHTML = '';
+      chatHistories[mode].forEach(msg => appendMessage(msg.text, msg.sender));
+    }
+
+    // Append message function
+    function appendMessage(text, sender) {
+      const segments = text.split('\n').filter(s => s.trim());
+      if (segments.length > 1) { segments.forEach(s => appendMessage(s, sender)); return; }
+      let content = segments[0] || '';
+      if (content.length > 300) {
+        for (let i = 0; i < content.length; i += 300) {
+          appendMessage(content.slice(i, i + 300), sender);
+        }
+        return;
+      }
+      const wrapper = document.createElement('div');
+      wrapper.className = 'mb-2 flex ' + (sender === 'user' ? 'justify-end' : 'justify-start');
+      const bubble = document.createElement('div');
+      bubble.className = sender === 'user'
+        ? 'bg-blue-600 text-white p-2 rounded-lg max-w-xs'
+        : 'bg-gray-200 text-gray-800 p-2 rounded-lg max-w-xs';
+      bubble.textContent = content;
+      wrapper.appendChild(bubble);
+      chatWindow.appendChild(wrapper);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    // Send message handler
+    sendBtn.addEventListener('click', () => {
+      const message = chatInput.value.trim();
+      if (!message) return;
+      appendMessage(message, 'user');
+      chatHistories[currentMode].push({ sender: 'user', text: message });
+      chatInput.value = '';
+      fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, section: '{{ current_section }}', mode: currentMode, module: document.getElementById('moduleSelect').value })
+      })
+      .then(res => res.json())
+      .then(data => {
+        const aiText = data.response || data.error;
+        chatHistories[currentMode].push({ sender: 'ai', text: aiText });
+        appendMessage(aiText, 'ai');
+      })
+      .catch(err => {
+        const errMsg = 'Error: ' + err.message;
+        chatHistories[currentMode].push({ sender: 'ai', text: errMsg });
+        appendMessage(errMsg, 'ai');
+      });
+    });
+
+    // Send on Enter
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendBtn.click();
+    });
+
+    // Module selector change event
+    document.getElementById('moduleSelect').addEventListener('change', function() {
+      const selected = this.value;
+      const url = new URL(window.location.href);
+      url.searchParams.set('module', selected);
+      url.searchParams.set('section', '');
+      window.location.href = url.toString();
+    });
+    </script>
+</body>
+</html> 

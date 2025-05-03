@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevGuide AI - Modules</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow">
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <h1 class="text-3xl font-bold text-gray-900">DevGuide AI Modules</h1>
+                <p class="mt-1 text-sm text-gray-500">Select a module to begin.</p>
+            </div>
+        </header>
+        <!-- Main Content -->
+        <main class="flex-grow max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for module in module_list %}
+                <div class="bg-white shadow sm:rounded-lg p-6 flex flex-col justify-between">
+                    <h2 class="text-xl font-semibold text-gray-900">{{ module.name }}</h2>
+                    {% if module.available %}
+                    <a href="/?module={{ module.name }}" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">View Module</a>
+                    {% else %}
+                    <span class="mt-4 inline-block px-4 py-2 bg-gray-400 text-white rounded">Coming Soon</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+</body>
+</html> 
