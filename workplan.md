@@ -112,11 +112,129 @@ The primary knowledge base for the initial module is the uploaded document: "NYC
     * **Action:** Based on quiz scores or how the user interacts with the AI guide (e.g., needing lots of hints), prompt the LLM to suggest the user review certain topics again, or generate follow-up questions that are harder or simpler. *Note: This is a complex AI integration point.*
     * **Using Cursor:** Ask Cursor for ideas on prompting an LLM to suggest next learning steps based on a user's performance on a quiz covering specific topics from the knowledge base.
 
+## Phase 6: Enhanced Chat Interface (LLM Integration)
+
+**Goal:** Build on the existing chat implementation to improve the user experience and functionality.
+
+* **Step 6.1: Implement Persistent Conversation History**
+    * **Goal:** Allow users to maintain conversation context across sessions.
+    * **Action:** Add server-side storage for chat histories (per user/session). Modify the `/chat` endpoint to maintain longer conversation context. Add UI controls to clear or save conversations.
+    * **Using Cursor:** Ask Cursor for guidance on implementing session-based storage in Flask and updating the chat interface to maintain history.
+    * **Output:** A chat system that remembers previous conversations.
+
+* **Step 6.2: Implement Response Streaming**
+    * **Goal:** Provide a more interactive chat experience with real-time response generation.
+    * **Action:** Implement server-sent events or WebSockets for streaming responses. Update the front-end to display responses as they're generated. Add typing indicators while waiting for responses.
+    * **Using Cursor:** Ask Cursor about implementing SSE or WebSockets in Flask and how to handle streaming responses in JavaScript.
+    * **Output:** A chat interface that displays AI responses as they're being generated.
+
+* **Step 6.3: Enhance Learning Mode**
+    * **Goal:** Improve the Socratic learning experience with more sophisticated prompting and visual cues.
+    * **Action:** Implement more sophisticated Socratic prompting strategies. Add visual differentiation between modes (colors, icons). Include progress tracking in Learning Mode.
+    * **Using Cursor:** Ask Cursor for ideas on advanced Socratic prompting techniques and how to implement visual mode indicators in the UI.
+    * **Output:** An enhanced Learning Mode that provides a more effective Socratic experience.
+
+## Phase 7: Quiz Module Implementation
+
+**Goal:** Add interactive quizzes to test user understanding of the content.
+
+* **Step 7.1: Create Quiz Content Structure**
+    * **Goal:** Define a format for storing quiz questions and answers related to each section.
+    * **Action:** Create a separate file or structure (e.g., a JSON file or Python dictionary) to hold questions (multiple choice, short answer) for each section.
+    * **Manual Effort:** Writing the actual quiz questions based on the content.
+    * **Output:** A structured set of quiz questions for each section.
+
+* **Step 7.2: Implement Quiz Display and Grading**
+    * **Goal:** Add a page or section to the web app to display quizzes and check user answers.
+    * **Action:** Create Flask routes and HTML templates to display quiz questions. Write JavaScript to collect user answers. Write back-end Python code to receive answers, compare them to correct answers, and calculate a score.
+    * **Using Cursor:** Ask Cursor to generate HTML for a quiz interface and Flask routes to handle quiz submissions.
+    * **Output:** A functional quiz system that displays questions and grades answers.
+
+* **Step 7.3: Implement AI Adaptive Difficulty**
+    * **Goal:** Use AI to analyze user performance and adjust the difficulty of subsequent questions.
+    * **Action:** Based on quiz scores, prompt the LLM to generate follow-up questions that are harder or simpler. Store user performance data to inform future question selection.
+    * **Using Cursor:** Ask Cursor for ideas on prompting an LLM to generate questions of varying difficulty based on user performance.
+    * **Output:** An adaptive quiz system that adjusts to user knowledge levels.
+
+## Phase 8: User Progress Tracking
+
+**Goal:** Add user accounts and progress tracking to enhance the learning experience.
+
+* **Step 8.1: Implement User Authentication**
+    * **Goal:** Allow users to create accounts and log in to the system.
+    * **Action:** Set up user registration and login functionality. Create user profiles with preferences. Ensure secure authentication.
+    * **Using Cursor:** Ask Cursor for guidance on implementing user authentication in Flask using Flask-Login or similar libraries.
+    * **Output:** A secure user authentication system.
+
+* **Step 8.2: Add Progress Tracking**
+    * **Goal:** Track user progress through the content and quizzes.
+    * **Action:** Create a database schema to store user progress data. Implement logic to track completed sections and quizzes. Save chat history per user. Provide progress visualizations.
+    * **Using Cursor:** Ask Cursor about database design for tracking user progress and how to implement progress visualization in the UI.
+    * **Output:** A system that tracks and displays user progress.
+
+* **Step 8.3: Create Personalized Experience**
+    * **Goal:** Customize the learning experience based on user progress and preferences.
+    * **Action:** Implement bookmarks and notes functionality. Add personalized recommendations based on user activity. Customize content display based on user progress.
+    * **Using Cursor:** Ask Cursor for ideas on implementing bookmarks and notes in a web application and how to generate personalized recommendations.
+    * **Output:** A personalized learning experience that adapts to each user.
+
+## Phase 9: Mobile Responsiveness and Accessibility
+
+**Goal:** Ensure the application works well on all devices and for all users.
+
+* **Step 9.1: Optimize for Mobile Devices**
+    * **Goal:** Make the application fully functional on mobile devices.
+    * **Action:** Improve responsive design for small screens. Optimize touch interactions. Enhance mobile navigation.
+    * **Using Cursor:** Ask Cursor for guidance on mobile-first design principles and responsive CSS techniques.
+    * **Output:** A mobile-friendly version of the application.
+
+* **Step 9.2: Enhance Accessibility**
+    * **Goal:** Make the application accessible to users with disabilities.
+    * **Action:** Implement ARIA attributes. Ensure keyboard navigation. Add screen reader support. Improve color contrast and text sizing.
+    * **Using Cursor:** Ask Cursor about web accessibility best practices and how to implement them in a Flask application.
+    * **Output:** An accessible application that complies with WCAG guidelines.
+
 ## MVP Definition (Revised)
 
-The MVP is a web-based Python application (using Flask) that displays the content of the "Navigating Zoning, Land Use, and Development Planning" document and provides a persistent RAG-powered, Socratic chat interface allowing the user to ask questions about the document content and receive guiding responses. The application structure will be set up to allow for the addition of other curriculum sections and future testing/adaptive features.
+The MVP is a web-based Python application (using Flask) that displays the content of the "Navigating Zoning, Land Use, and Development Planning" document and provides a persistent RAG-powered, Socratic chat interface allowing the user to ask questions about the document content and receive guiding responses. The application structure is set up to allow for the addition of other curriculum sections and future testing/adaptive features.
 
-This revised plan gives us a roadmap for building the web platform version of your DevGuide AI. It requires more steps involving both front-end and back-end code, but it aligns with your vision for a more interactive and structured learning experience.
+The current implementation includes:
+- Document processing and display with section navigation
+- Search functionality with highlighting and context display
+- Chat interface with regular and Socratic learning modes
+- Embedding-based retrieval for relevant content
+- ChromaDB vector database for improved RAG performance
+- Multi-module support with a landing page
+- Glossary and footnote integration
+- Persistent conversation history across page refreshes and module navigation
+- Response streaming
+- Improved UI with better typography, spacing, and visual hierarchy
+- Enhanced section headers with better styling
 
-Which phase and step would you like to start with? I recommend starting with **Phase 1: Setting Up and Reading the Knowledge Base** to get the core content loaded, likely starting with **Step 1.1** (Project Setup and Basic Web Server).
+## Next Steps
+
+Based on our progress, the next priorities are:
+
+1. **Enhance Learning Mode (Phase 6.3)**
+   - Implement more sophisticated Socratic prompting strategies
+   - Add visual differentiation between modes (colors, icons)
+   - Include progress tracking in Learning Mode
+   - Enhance the user experience with better feedback and guidance
+
+2. **Implement Quiz Module (Phase 7)**
+   - Create quiz content structure for storing questions and answers
+   - Implement quiz display and grading functionality
+   - Add adaptive difficulty based on user performance
+
+3. **Add User Progress Tracking (Phase 8)**
+   - Implement user authentication
+   - Add progress tracking for completed sections and quizzes
+   - Create personalized experience based on user progress
+
+4. **Improve Mobile Responsiveness and Accessibility (Phase 9)**
+   - Optimize for mobile devices
+   - Enhance accessibility with ARIA attributes and keyboard navigation
+   - Improve color contrast and text sizing
+
+These next steps will focus on enhancing the learning experience, adding interactive elements, and ensuring the application is accessible to all users.
 

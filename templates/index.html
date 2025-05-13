@@ -7,11 +7,78 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         .search-results {
-            max-height: 400px;
+            max-height: 500px;
             overflow-y: auto;
         }
         .search-highlight {
             background-color: yellow;
+        }
+        mark {
+            background-color: #FFEB3B;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        .search-result-item {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 12px;
+            transition: background-color 0.2s;
+        }
+        .search-result-item:hover {
+            background-color: #f9fafb;
+        }
+        .search-result-section {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+        .search-result-breadcrumb {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        .search-result-context {
+            margin-top: 8px;
+            padding: 8px;
+            background-color: #f3f4f6;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+        .search-result-match {
+            font-weight: 500;
+        }
+        .search-pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 12px;
+            gap: 4px;
+        }
+        .search-pagination-button {
+            padding: 4px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            background-color: white;
+            color: #374151;
+            cursor: pointer;
+        }
+        .search-pagination-button.active {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+        .search-pagination-button:hover:not(.active) {
+            background-color: #f3f4f6;
+        }
+        .search-filters {
+            padding: 8px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .search-count {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-left: auto;
         }
         .footnote-link {
             color: #2563eb;
@@ -104,41 +171,263 @@
         .works-cited-section li a:hover {
             text-decoration: underline;
         }
+
+        /* Table styles */
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        .content-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+        .content-table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+        }
+        .content-table td {
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+        }
+        .content-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        /* Image placeholder */
+        .image-placeholder {
+            background-color: #f3f4f6;
+            border: 1px dashed #d1d5db;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            text-align: center;
+            color: #6b7280;
+            margin: 1.5rem 0;
+        }
+
+        /* Typing indicator animation */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 20px;
+        }
+        .typing-indicator span {
+            background-color: #6b7280;
+            border-radius: 50%;
+            display: inline-block;
+            height: 6px;
+            width: 6px;
+            margin: 0 2px;
+            opacity: 0.6;
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-indicator span:nth-child(1) {
+            animation-delay: 0s;
+        }
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.6); }
+            40% { transform: scale(1); }
+        }
+
+        /* Toggle switch styles */
+        #streamingToggle:checked + div {
+            background-color: #3b82f6; /* blue-500 */
+        }
+        #streamingToggle:checked + div div {
+            transform: translateX(100%);
+        }
+        /* Larger toggle switch */
+        .relative.w-12.h-6 div {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        /* Streaming text animation */
+        @keyframes blink {
+            0% { opacity: 0.2; }
+            20% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+        .streaming-cursor {
+            display: inline-block;
+            width: 6px;
+            height: 16px;
+            background-color: currentColor;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+        }
+
+        /* Chat message styling */
+        .chat-message {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        .user-message {
+            background-color: #f3f4f6;
+        }
+        .ai-message {
+            background-color: #e8f0fe;
+        }
+        .message-content {
+            line-height: 1.6;
+        }
+        .message-time {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            text-align: right;
+        }
+
+        /* Collapsible section styling */
+        .section-header {
+            cursor: pointer;
+            position: relative;
+            padding: 1rem 2.5rem 1rem 1.5rem;
+            background-color: #f9fafb;
+            border-radius: 0.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            border-left: 4px solid #3b82f6;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .section-header:hover {
+            background-color: #f3f4f6;
+        }
+
+        .section-header::after {
+            content: "▼";
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75rem;
+            color: #6b7280;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .section-header.collapsed::after {
+            transform: translateY(-50%) rotate(-90deg);
+        }
+
+        .section-content {
+            max-height: 2000px;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out;
+            opacity: 1;
+            padding: 0.5rem 1rem;
+        }
+
+        .section-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .content-sections {
+            padding: 0.5rem;
+        }
+
+        .content-sections p {
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
     <div class="min-h-screen">
         <!-- Header -->
         <header class="bg-white shadow">
-            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900">DevGuide AI</h1>
-                        <p class="mt-1 text-sm text-gray-500">{{ current_module }}</p>
+                        <p class="mt-2 text-sm text-gray-500">{{ current_module }}</p>
                     </div>
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-8">
                         <!-- All Modules Button -->
-                        <a href="/modules" class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">All Modules</a>
+                        <a href="/modules" class="px-5 py-3 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">All Modules</a>
                         <!-- Module Selector -->
                         <div>
-                            <select id="moduleSelect" class="px-2 py-1 border rounded">
+                            <select id="moduleSelect" class="px-4 py-3 border rounded">
                                 {% for module in modules %}
                                 <option value="{{ module }}" {% if module == current_module %}selected{% endif %}>{{ module }}</option>
                                 {% endfor %}
                             </select>
                         </div>
                         <!-- Add Glossary Button -->
-                        <a href="/?module={{ current_module }}&section=Glossary of Terms" 
-                           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <a href="/?module={{ current_module }}&section=Glossary of Terms"
+                           class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                             Glossary
                         </a>
                         <!-- Search Box -->
                         <div class="relative w-96">
-                            <input type="text" 
-                                   id="search"
-                                   placeholder="Search content..." 
-                                   class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <div id="searchResults" class="absolute w-full mt-2 bg-white rounded-lg shadow-lg hidden search-results">
+                            <div class="flex">
+                                <input type="text"
+                                       id="search"
+                                       placeholder="Search content..."
+                                       class="w-full px-5 py-3 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <button id="advancedSearchToggle" class="px-4 py-3 bg-gray-100 border border-l-0 rounded-r-lg hover:bg-gray-200" title="Toggle advanced search options">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div id="advancedSearchOptions" class="absolute w-full mt-1 bg-white rounded-lg shadow-lg hidden p-3 border z-10">
+                                <div class="mb-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Section Filter</label>
+                                    <select id="sectionFilter" class="w-full px-2 py-1 border rounded text-sm">
+                                        <option value="">All Sections</option>
+                                        {% for section in hierarchy %}
+                                            <option value="{{ section.title }}">{{ section.title }}</option>
+                                            {% for subsection in section.subsections %}
+                                                <option value="{{ subsection.title }}">&nbsp;&nbsp;- {{ subsection.title }}</option>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="flex items-center mb-2">
+                                    <input type="checkbox" id="phraseSearch" class="mr-2">
+                                    <label for="phraseSearch" class="text-sm text-gray-700">Exact phrase match</label>
+                                </div>
+                                <div class="text-xs text-gray-500 mb-2">
+                                    <p>Search tips:</p>
+                                    <ul class="list-disc pl-4">
+                                        <li>Use quotes for exact phrase: "floor area ratio"</li>
+                                        <li>Include multiple terms to narrow results</li>
+                                    </ul>
+                                </div>
+                                <button id="applySearchFilters" class="w-full px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Apply Filters</button>
+                            </div>
+                            <div id="searchResults" class="absolute w-full mt-2 bg-white rounded-lg shadow-lg hidden search-results z-20">
+                                <div id="searchFilters" class="search-filters hidden">
+                                    <select id="resultSectionFilter" class="text-sm px-2 py-1 border rounded">
+                                        <option value="">All Sections</option>
+                                    </select>
+                                    <select id="resultsPerPage" class="text-sm px-2 py-1 border rounded">
+                                        <option value="5">5 per page</option>
+                                        <option value="10" selected>10 per page</option>
+                                        <option value="20">20 per page</option>
+                                    </select>
+                                    <span id="searchCount" class="search-count"></span>
+                                </div>
+                                <div id="searchResultsList"></div>
+                                <div id="searchPagination" class="search-pagination p-2 hidden"></div>
                             </div>
                         </div>
                     </div>
@@ -147,33 +436,43 @@
         </header>
 
         <!-- Main Content -->
-        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <main class="max-w-7xl mx-auto py-12 sm:px-6 lg:px-8">
             {% if error %}
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
                 <span class="block sm:inline">{{ error }}</span>
             </div>
             {% endif %}
 
-            <div class="flex gap-6">
+            <div class="flex gap-10">
                 <!-- Section Navigation -->
                 <div class="w-1/4">
                     <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-                        <div class="px-4 py-5 sm:px-6">
+                        <div class="px-8 py-6 sm:px-8">
                             <h2 class="text-lg font-medium text-gray-900">Table of Contents</h2>
                         </div>
                         <div class="border-t border-gray-200">
                             <nav class="flex flex-col">
                                 {% for section in hierarchy %}
                                 <div class="border-b border-gray-100">
-                                    <a href="/?module={{ current_module }}&section={{ section.title|urlencode }}" 
-                                       class="px-4 py-3 block font-medium hover:bg-gray-50 {% if section.title == current_section %}bg-blue-50 border-l-4 border-blue-500{% endif %}">
+                                    <a href="/?module={{ current_module }}&section={{ section.title|urlencode }}"
+                                       class="px-8 py-4 block font-medium hover:bg-gray-50 {% if section.title == current_section %}bg-blue-50 border-l-4 border-blue-500{% endif %}">
                                         {{ section.title }}
                                     </a>
                                     {% for subsection in section.subsections %}
-                                    <a href="/?module={{ current_module }}&section={{ subsection|urlencode }}" 
-                                       class="px-8 py-2 block text-sm hover:bg-gray-50 {% if subsection == current_section %}bg-blue-50 border-l-4 border-blue-500{% endif %}">
-                                        {{ subsection }}
+                                    <a href="/?module={{ current_module }}&section={{ subsection.title|urlencode }}"
+                                       class="px-12 py-3 block text-sm hover:bg-gray-50 {% if subsection.title == current_section %}bg-blue-50 border-l-4 border-blue-500{% endif %}">
+                                        {{ subsection.title }}
                                     </a>
+
+                                    <!-- Render nested subsections with increased indentation -->
+                                    {% if subsection.subsections %}
+                                        {% for subsubsection in subsection.subsections %}
+                                        <a href="/?module={{ current_module }}&section={{ subsubsection.title|urlencode }}"
+                                           class="px-16 py-2 block text-xs hover:bg-gray-50 {% if subsubsection.title == current_section %}bg-blue-50 border-l-4 border-blue-500{% endif %}">
+                                            {{ subsubsection.title }}
+                                        </a>
+                                        {% endfor %}
+                                    {% endif %}
                                     {% endfor %}
                                 </div>
                                 {% endfor %}
@@ -185,19 +484,19 @@
                 <!-- Content Area -->
                 <div class="w-3/4">
                     <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-                        <div class="px-4 py-5 sm:px-6">
+                        <div class="px-8 py-8 sm:px-10">
                             <!-- Breadcrumb Navigation -->
-                            <nav class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
+                            <nav class="flex items-center space-x-3 text-sm text-gray-500 mb-4">
                                 <a href="/modules" class="hover:underline">All Modules</a>
                                 <span>/</span>
                                 <a href="/?module={{ current_module }}" class="hover:underline">{{ current_module }}</a>
                                 <span>/</span>
                                 <span class="font-medium">{{ current_section }}</span>
                             </nav>
-                            <h2 class="text-xl font-semibold text-gray-900">{{ current_section }}</h2>
+                            <h2 class="text-2xl font-semibold text-gray-900 mb-2">{{ current_section }}</h2>
                         </div>
                         <div class="border-t border-gray-200">
-                            <div class="px-4 py-5 sm:p-6">
+                            <div class="px-8 py-8 sm:p-10">
                                 <div class="prose max-w-none {% if current_section == 'Glossary of Terms' %}glossary-section{% endif %} {% if current_section == 'Works cited' %}works-cited-section{% endif %}">
                                     {% if section_content %}
                                         {% if current_section == 'Glossary of Terms' %}
@@ -209,7 +508,7 @@
                                                     <dd>{{ term_def[1] | safe }}</dd>
                                                 {% else %}
                                                     <!-- Render non-term lines if necessary -->
-                                                    <p class="mb-4">{{ paragraph | safe }}</p> 
+                                                    <p class="mb-5">{{ paragraph | safe }}</p>
                                                 {% endif %}
                                             {% endfor %}
                                             </dl>
@@ -223,9 +522,24 @@
                                                 {% endfor %}
                                             </ol>
                                         {% else %}
-                                            {% for paragraph in section_content.split('\n') %}
-                                                <p class="mb-4">{{ paragraph | safe }}</p>
-                                            {% endfor %}
+                                            <!-- Split content into sections for collapsible display -->
+                                            {% set paragraphs = section_content.split('\n') %}
+                                            {% set current_section_title = '' %}
+                                            {% set section_paragraphs = [] %}
+                                            {% set sections = [] %}
+
+                                            <!-- Simple content display with enhanced styling -->
+                                            <div class="content-sections">
+                                                {% for paragraph in paragraphs %}
+                                                    {% if paragraph.startswith('<h') or paragraph.startswith('<strong>') %}
+                                                        <div class="section-header mt-6 mb-3">
+                                                            {{ paragraph | safe }}
+                                                        </div>
+                                                    {% else %}
+                                                        <p class="mb-5">{{ paragraph | safe }}</p>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
                                         {% endif %}
 
                                         {% if section_footnotes %}
@@ -248,23 +562,87 @@
 
                         <!-- Chat Panel -->
                         <div id="chatPanel" class="fixed bottom-0 right-0 transform translate-y-full transition-transform duration-300 ease-in-out bg-white w-full max-w-md h-3/4 shadow-xl rounded-t-lg flex flex-col">
-                            <div class="flex items-center justify-between p-4 border-b">
+                            <div class="flex items-center justify-between p-5 border-b">
                                 <h3 class="text-lg font-medium text-gray-900">Ask the AI</h3>
-                                <button id="modeToggle" title="Switch to Learning Mode to have a pointed, Socratic conversation with the AI." class="px-3 py-1 bg-gray-200 text-gray-700 rounded focus:outline-none">Chat Mode</button>
-                                <button id="chatCloseBtn" class="text-gray-500 hover:text-gray-700 focus:outline-none">&times;</button>
+                                <div class="flex space-x-3">
+                                    <button id="modeToggle" title="Switch to Learning Mode to have a pointed, Socratic conversation with the AI." class="px-4 py-2 bg-gray-200 text-gray-700 rounded focus:outline-none">Chat Mode</button>
+                                    <button id="chatCloseBtn" class="text-gray-500 hover:text-gray-700 focus:outline-none text-xl">&times;</button>
+                                </div>
                             </div>
-                            <div id="chatWindow" class="flex-1 overflow-y-auto p-4 bg-gray-50"></div>
-                            <div class="p-4 border-t flex">
-                                <input id="chatInput" type="text" placeholder="Type your question..." class="flex-grow px-3 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <button id="sendBtn" class="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700">Send</button>
+                            <div id="chatWindow" class="flex-1 overflow-y-auto p-6 bg-gray-50"></div>
+                            <div class="p-5 border-t">
+                                <div class="flex mb-3">
+                                    <input id="chatInput" type="text" placeholder="Type your question..." class="flex-grow px-4 py-3 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <button id="sendBtn" class="px-5 py-3 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700">Send</button>
+                                </div>
+                                <div class="flex justify-between text-sm text-gray-500 mb-3">
+                                    <button id="searchInChatBtn" class="hover:text-blue-600 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                        Search in content
+                                    </button>
+                                    <button id="suggestedQuestionsBtn" class="hover:text-blue-600 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Suggested questions
+                                    </button>
+                                </div>
+
+                                <!-- Chat History Controls -->
+                                <div class="flex justify-between text-sm text-gray-500 mb-3">
+                                    <button id="clearChatBtn" class="hover:text-red-600 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        Clear history
+                                    </button>
+                                    <button id="exportChatBtn" class="hover:text-blue-600 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                        Export conversation
+                                    </button>
+                                </div>
+
+                                <!-- Streaming Toggle -->
+                                <div class="flex justify-between text-sm text-gray-500 mb-3">
+                                    <label class="flex items-center cursor-pointer">
+                                        <input type="checkbox" id="streamingToggle" class="sr-only">
+                                        <div class="relative w-12 h-6 bg-gray-200 rounded-full shadow-inner transition-colors duration-200 ease-in-out">
+                                            <div class="absolute left-0 w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out"></div>
+                                        </div>
+                                        <span class="ml-3">Enable streaming responses</span>
+                                    </label>
+                                </div>
+
+                                <!-- History Status Indicator -->
+                                <div id="historyStatus" class="text-sm text-gray-500 text-center mb-3 hidden">
+                                    <span class="inline-flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span id="historyStatusText">Using conversation history</span>
+                                    </span>
+                                </div>
+
+                                <div id="suggestedQuestions" class="mt-3 hidden">
+                                    <div class="text-sm font-medium text-gray-700 mb-2">Suggested questions about this section:</div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <button class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded suggested-question">What is FAR?</button>
+                                        <button class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded suggested-question">Explain zoning regulations</button>
+                                        <button class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded suggested-question">How do I apply for a variance?</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Navigation Controls -->
-                        <div class="border-t border-gray-200 px-4 py-3 flex justify-between items-center bg-gray-50">
+                        <div class="border-t border-gray-200 px-6 py-5 flex justify-between items-center bg-gray-50">
                             {% if prev_section %}
-                            <a href="/?module={{ current_module }}&section={{ prev_section|urlencode }}" 
-                               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                            <a href="/?module={{ current_module }}&section={{ prev_section|urlencode }}"
+                               class="inline-flex items-center px-5 py-3 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                                 ← Previous
                             </a>
                             {% else %}
@@ -272,8 +650,8 @@
                             {% endif %}
 
                             {% if next_section %}
-                            <a href="/?module={{ current_module }}&section={{ next_section|urlencode }}" 
-                               class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                            <a href="/?module={{ current_module }}&section={{ next_section|urlencode }}"
+                               class="inline-flex items-center px-5 py-3 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                                 Next →
                             </a>
                             {% endif %}
@@ -286,53 +664,346 @@
 
     <!-- JavaScript for Search -->
     <script>
+        // Search elements
         const searchInput = document.getElementById('search');
         const searchResults = document.getElementById('searchResults');
+        const searchResultsList = document.getElementById('searchResultsList');
+        const searchPagination = document.getElementById('searchPagination');
+        const searchFilters = document.getElementById('searchFilters');
+        const searchCount = document.getElementById('searchCount');
         const moduleSelect = document.getElementById('moduleSelect');
-        let searchTimeout;
+        const advancedSearchToggle = document.getElementById('advancedSearchToggle');
+        const advancedSearchOptions = document.getElementById('advancedSearchOptions');
+        const sectionFilter = document.getElementById('sectionFilter');
+        const resultSectionFilter = document.getElementById('resultSectionFilter');
+        const resultsPerPage = document.getElementById('resultsPerPage');
+        const phraseSearch = document.getElementById('phraseSearch');
+        const applySearchFilters = document.getElementById('applySearchFilters');
 
+        // Search state
+        let searchTimeout;
+        let currentSearchData = null;
+        let currentPage = 1;
+        let currentQuery = '';
+        let currentSectionFilter = '';
+        let currentPerPage = 10;
+
+        // Toggle advanced search options
+        advancedSearchToggle.addEventListener('click', function() {
+            advancedSearchOptions.classList.toggle('hidden');
+        });
+
+        // Apply search filters
+        applySearchFilters.addEventListener('click', function() {
+            advancedSearchOptions.classList.add('hidden');
+            performSearch();
+        });
+
+        // Handle section filter change in results
+        resultSectionFilter.addEventListener('change', function() {
+            currentSectionFilter = this.value;
+            currentPage = 1;
+            performSearch();
+        });
+
+        // Handle results per page change
+        resultsPerPage.addEventListener('change', function() {
+            currentPerPage = parseInt(this.value);
+            currentPage = 1;
+            performSearch();
+        });
+
+        // Basic search input handler
         searchInput.addEventListener('input', function() {
             clearTimeout(searchTimeout);
             const query = this.value.trim();
-            
+            currentQuery = query;
+
             if (query.length < 2) {
                 searchResults.classList.add('hidden');
                 return;
             }
 
             searchTimeout = setTimeout(() => {
-                fetch(`/search?module=${encodeURIComponent(moduleSelect.value)}&q=${encodeURIComponent(query)}`)
-                    .then(response => response.json())
-                    .then(results => {
-                        if (results.length > 0) {
-                            searchResults.innerHTML = results.map(result => `
-                                <a href="/?module=${encodeURIComponent(moduleSelect.value)}&section=${encodeURIComponent(result.section)}" 
-                                   class="block px-4 py-2 hover:bg-gray-100 border-b">
-                                    <div class="font-medium text-sm text-gray-900">${result.section}</div>
-                                    <div class="text-sm text-gray-600">${result.context}</div>
-                                </a>
-                            `).join('');
-                            searchResults.classList.remove('hidden');
-                        } else {
-                            searchResults.innerHTML = `
-                                <div class="px-4 py-2 text-sm text-gray-500">
-                                    No results found
-                                </div>
-                            `;
-                            searchResults.classList.remove('hidden');
-                        }
-                    });
+                performSearch();
             }, 300);
         });
 
+        // Search execution function
+        function performSearch() {
+            const query = currentQuery;
+            if (query.length < 2) return;
+
+            console.log(`Performing search for: "${query}"`);
+
+            // Apply phrase search if checkbox is checked
+            let searchQuery = query;
+            if (phraseSearch.checked && !searchQuery.startsWith('"') && !searchQuery.endsWith('"')) {
+                searchQuery = `"${searchQuery}"`;
+                console.log(`Applied phrase search: "${searchQuery}"`);
+            }
+
+            // Get section filter
+            const section = sectionFilter.value || currentSectionFilter;
+            if (section) {
+                console.log(`Filtering by section: "${section}"`);
+            }
+
+            // Build search URL with all parameters
+            const searchUrl = `/search?module=${encodeURIComponent(moduleSelect.value)}&q=${encodeURIComponent(searchQuery)}&page=${currentPage}&per_page=${currentPerPage}${section ? `&section=${encodeURIComponent(section)}` : ''}`;
+            console.log(`Search URL: ${searchUrl}`);
+
+            // Show loading indicator
+            searchResultsList.innerHTML = '<div class="p-4 text-center"><div class="inline-block animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div><span class="ml-2">Searching...</span></div>';
+            searchResults.classList.remove('hidden');
+
+            // Fetch search results
+            fetch(searchUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(`Search returned ${data.total} results`);
+
+                    // Check for error in response
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    // Store search data for pagination
+                    currentSearchData = data;
+
+                    // Update section filter options if needed
+                    if (Object.keys(data.section_hierarchy || {}).length > 0 && resultSectionFilter.options.length <= 1) {
+                        populateSectionFilter(data.section_hierarchy);
+                    }
+
+                    // Show search filters
+                    searchFilters.classList.remove('hidden');
+
+                    // Update search count
+                    searchCount.textContent = `${data.total} results`;
+
+                    // Render results
+                    renderSearchResults(data);
+
+                    // Render pagination
+                    renderPagination(data);
+                })
+                .catch(error => {
+                    console.error(`Search error: ${error.message}`);
+                    searchResultsList.innerHTML = `
+                        <div class="px-4 py-2 text-sm text-red-500">
+                            Error: ${error.message}
+                        </div>
+                    `;
+                });
+        }
+
+        // Render search results
+        function renderSearchResults(data) {
+            const results = data.results || [];
+            const query = data.query || currentQuery;
+
+            console.log(`Rendering ${results.length} search results for query: "${query}"`);
+
+            if (results.length > 0) {
+                searchResultsList.innerHTML = results.map((result, index) => {
+                    // Build breadcrumb from section path
+                    const breadcrumb = result.section_path && result.section_path.length > 1
+                        ? result.section_path.slice(0, -1).join(' > ')
+                        : '';
+
+                    // Log result details for debugging
+                    console.log(`Result #${index+1}: Section "${result.section}", Relevance: ${result.relevance}`);
+
+                    // Check if context paragraphs exist
+                    if (!result.context_paragraphs || result.context_paragraphs.length === 0) {
+                        console.warn(`No context paragraphs for result #${index+1}`);
+                    }
+
+                    // Get context paragraphs with better handling
+                    let contextHtml = '';
+                    if (result.context_paragraphs && result.context_paragraphs.length > 0) {
+                        contextHtml = result.context_paragraphs.map(para => {
+                            if (!para) return '';
+
+                            if (para.is_match) {
+                                // Check if highlighted version exists
+                                if (para.highlighted && para.highlighted.includes('<mark>')) {
+                                    return `<div class="search-result-match">${para.highlighted}</div>`;
+                                } else {
+                                    // Fallback to manual highlighting if server didn't provide it
+                                    const highlightedText = highlightText(para.text, query);
+                                    return `<div class="search-result-match">${highlightedText}</div>`;
+                                }
+                            } else {
+                                return `<div class="text-gray-600 text-sm">${para.text}</div>`;
+                            }
+                        }).join('');
+                    } else {
+                        // Fallback if no context paragraphs
+                        contextHtml = `<div class="text-gray-500 italic">Context not available</div>`;
+                    }
+
+                    return `
+                        <a href="/?module=${encodeURIComponent(moduleSelect.value)}&section=${encodeURIComponent(result.section)}"
+                           class="block search-result-item">
+                            <div class="search-result-section">${result.section}</div>
+                            ${breadcrumb ? `<div class="search-result-breadcrumb">${breadcrumb}</div>` : ''}
+                            <div class="search-result-context">${contextHtml}</div>
+                            <div class="text-xs text-gray-500 mt-1">Relevance score: ${result.relevance}</div>
+                        </a>
+                    `;
+                }).join('');
+            } else {
+                // Enhanced no results message with suggestions
+                searchResultsList.innerHTML = `
+                    <div class="px-4 py-4 text-sm text-gray-500">
+                        <div class="text-center mb-3">No results found for "${query}"</div>
+                        <div class="text-xs">
+                            <p class="font-medium mb-1">Suggestions:</p>
+                            <ul class="list-disc pl-5">
+                                <li>Check your spelling</li>
+                                <li>Try more general keywords</li>
+                                <li>Try different keywords</li>
+                                <li>Try searching in all sections</li>
+                                ${phraseSearch.checked ? '<li>Try disabling exact phrase matching</li>' : ''}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Helper function to highlight text if server didn't do it
+        function highlightText(text, query) {
+            if (!text || !query) return text;
+
+            // Remove quotes for phrase search
+            let searchTerms = query;
+            if (searchTerms.startsWith('"') && searchTerms.endsWith('"')) {
+                searchTerms = searchTerms.substring(1, searchTerms.length - 1);
+            }
+
+            // For phrase search, highlight the whole phrase
+            if (phraseSearch.checked) {
+                const regex = new RegExp(escapeRegExp(searchTerms), 'gi');
+                return text.replace(regex, match => `<mark>${match}</mark>`);
+            }
+            // For keyword search, highlight each word
+            else {
+                let result = text;
+                searchTerms.split(' ').forEach(term => {
+                    if (term.length < 2) return; // Skip very short terms
+                    const regex = new RegExp(`\\b${escapeRegExp(term)}\\b`, 'gi');
+                    result = result.replace(regex, match => `<mark>${match}</mark>`);
+                });
+                return result;
+            }
+        }
+
+        // Helper to escape special characters in regex
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // Render pagination controls
+        function renderPagination(data) {
+            if (!data || !data.total_pages) {
+                searchPagination.classList.add('hidden');
+                return;
+            }
+
+            if (data.total_pages <= 1) {
+                searchPagination.classList.add('hidden');
+                return;
+            }
+
+            searchPagination.classList.remove('hidden');
+
+            // Build pagination HTML
+            let paginationHtml = '';
+
+            // Previous button
+            paginationHtml += `
+                <button class="search-pagination-button ${data.page <= 1 ? 'opacity-50 cursor-not-allowed' : ''}"
+                        ${data.page <= 1 ? 'disabled' : 'onclick="changePage(' + (data.page - 1) + ')"'}>
+                    &laquo;
+                </button>
+            `;
+
+            // Page buttons
+            const maxButtons = 5;
+            const startPage = Math.max(1, data.page - Math.floor(maxButtons / 2));
+            const endPage = Math.min(data.total_pages, startPage + maxButtons - 1);
+
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHtml += `
+                    <button class="search-pagination-button ${i === data.page ? 'active' : ''}"
+                            onclick="changePage(${i})">
+                        ${i}
+                    </button>
+                `;
+            }
+
+            // Next button
+            paginationHtml += `
+                <button class="search-pagination-button ${data.page >= data.total_pages ? 'opacity-50 cursor-not-allowed' : ''}"
+                        ${data.page >= data.total_pages ? 'disabled' : 'onclick="changePage(' + (data.page + 1) + ')"'}>
+                    &raquo;
+                </button>
+            `;
+
+            searchPagination.innerHTML = paginationHtml;
+        }
+
+        // Change page function (called from pagination buttons)
+        function changePage(page) {
+            currentPage = page;
+            performSearch();
+            // Scroll back to top of results
+            searchResults.scrollTop = 0;
+        }
+
+        // Populate section filter dropdown
+        function populateSectionFilter(hierarchy) {
+            // Clear existing options except the first one
+            while (resultSectionFilter.options.length > 1) {
+                resultSectionFilter.remove(1);
+            }
+
+            // Add options from hierarchy
+            const sections = Object.keys(hierarchy).sort();
+            for (const section of sections) {
+                const option = document.createElement('option');
+                option.value = section;
+                option.textContent = section;
+                resultSectionFilter.appendChild(option);
+            }
+        }
+
+        // Make changePage function global for onclick handlers
+        window.changePage = changePage;
+
         // Hide search results when clicking outside
         document.addEventListener('click', function(e) {
-            if (!searchResults.contains(e.target) && e.target !== searchInput) {
+            const isSearchRelated = searchResults.contains(e.target) ||
+                                   searchInput.contains(e.target) ||
+                                   e.target === searchInput ||
+                                   e.target === advancedSearchToggle ||
+                                   advancedSearchOptions.contains(e.target);
+
+            if (!isSearchRelated) {
                 searchResults.classList.add('hidden');
+                advancedSearchOptions.classList.add('hidden');
             }
         });
 
-        // Smooth scroll to footnotes
+        // Smooth scroll to footnotes and other anchor links
         document.addEventListener('click', function(e) {
             if (e.target.matches('a[href^="#"]')) {
                 e.preventDefault();
@@ -345,6 +1016,78 @@
         });
     </script>
 
+
+
+
+
+    <!-- Collapsible Sections JavaScript -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Find all content sections
+        const contentSections = document.querySelectorAll('.content-sections');
+
+        contentSections.forEach(contentSection => {
+            // Find all section headers within this content section
+            const headers = contentSection.querySelectorAll('.section-header');
+
+            // Skip if no headers found
+            if (headers.length === 0) return;
+
+            // Process each header to make it collapsible
+            headers.forEach((header, index) => {
+                // Create a unique ID for this section
+                const sectionId = 'section-' + Math.random().toString(36).substr(2, 9);
+
+                // Get all content elements after this header until the next header
+                const content = document.createElement('div');
+                content.id = sectionId;
+                content.className = 'section-content';
+
+                // If not the first section, collapse it by default
+                if (index > 0) {
+                    content.classList.add('collapsed');
+                    header.classList.add('collapsed');
+                }
+
+                // Get all elements after this header until the next header
+                let nextElement = header.nextElementSibling;
+                while (nextElement && !nextElement.classList.contains('section-header')) {
+                    const clone = nextElement.cloneNode(true);
+                    content.appendChild(clone);
+
+                    // Store the original element to remove later
+                    const toRemove = nextElement;
+                    nextElement = nextElement.nextElementSibling;
+                    toRemove.remove();
+                }
+
+                // Insert the content div after the header
+                header.after(content);
+
+                // Add click event to toggle the section
+                header.addEventListener('click', function() {
+                    // Toggle this section
+                    this.classList.toggle('collapsed');
+                    content.classList.toggle('collapsed');
+
+                    // If expanding this section, collapse all others
+                    if (!this.classList.contains('collapsed')) {
+                        headers.forEach(otherHeader => {
+                            if (otherHeader !== this && !otherHeader.classList.contains('collapsed')) {
+                                otherHeader.classList.add('collapsed');
+                                const otherContent = document.getElementById(otherHeader.nextElementSibling.id);
+                                if (otherContent) {
+                                    otherContent.classList.add('collapsed');
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    });
+    </script>
+
     <script>
     // Floating Chat UI logic
     const chatToggleBtn = document.getElementById('chatToggleBtn');
@@ -354,12 +1097,45 @@
     const chatWindow = document.getElementById('chatWindow');
     const chatInput = document.getElementById('chatInput');
     const sendBtn = document.getElementById('sendBtn');
+    const clearChatBtn = document.getElementById('clearChatBtn');
+    const exportChatBtn = document.getElementById('exportChatBtn');
+    const historyStatus = document.getElementById('historyStatus');
+    const historyStatusText = document.getElementById('historyStatusText');
+    const streamingToggle = document.getElementById('streamingToggle');
+
+    // Initialize streaming preference from localStorage or default to true
+    let streamingEnabled = localStorage.getItem('streamingEnabled') !== 'false';
+    streamingToggle.checked = streamingEnabled;
+
+    // Update toggle appearance based on state
+    function updateToggleAppearance() {
+      if (streamingEnabled) {
+        streamingToggle.nextElementSibling.classList.add('bg-blue-500');
+        streamingToggle.nextElementSibling.classList.remove('bg-gray-200');
+        streamingToggle.nextElementSibling.querySelector('div').classList.add('translate-x-full');
+      } else {
+        streamingToggle.nextElementSibling.classList.remove('bg-blue-500');
+        streamingToggle.nextElementSibling.classList.add('bg-gray-200');
+        streamingToggle.nextElementSibling.querySelector('div').classList.remove('translate-x-full');
+      }
+    }
+
+    // Initialize toggle appearance
+    updateToggleAppearance();
+
+    // Toggle streaming setting
+    streamingToggle.addEventListener('change', () => {
+      streamingEnabled = streamingToggle.checked;
+      localStorage.setItem('streamingEnabled', streamingEnabled);
+      updateToggleAppearance();
+    });
 
     // Open/close panel
     chatToggleBtn.addEventListener('click', () => {
       chatPanel.classList.toggle('translate-y-full');
-      renderHistory(currentMode);
+      fetchServerHistory();
     });
+
     chatCloseBtn.addEventListener('click', () => {
       chatPanel.classList.add('translate-y-full');
     });
@@ -367,68 +1143,782 @@
     // Mode toggle
     let currentMode = 'chat';
     const chatHistories = { chat: [], learning: [] };
+    let hasServerHistory = false;
+
     modeToggleBtn.addEventListener('click', () => {
       currentMode = currentMode === 'chat' ? 'learning' : 'chat';
       modeToggleBtn.textContent = currentMode === 'chat' ? 'Chat Mode' : 'Learning Mode';
       modeToggleBtn.title = currentMode === 'chat'
         ? 'Switch to Learning Mode to have a pointed, Socratic conversation with the AI.'
         : 'Switch back to Chat Mode for direct answers from the AI.';
-      renderHistory(currentMode);
+      fetchServerHistory();
     });
+
+    // Fetch history from server
+    function fetchServerHistory() {
+      // Show loading indicator
+      chatWindow.innerHTML = '<div class="text-center text-gray-500 my-8 py-8 text-lg">Loading conversation history...</div>';
+
+      // Get current module
+      const currentModule = document.getElementById('moduleSelect').value;
+
+      // Make a request to get history from server
+      fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: '/history',
+          mode: currentMode,
+          module: currentModule
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.history) {
+          // Update local history with server history
+          chatHistories[currentMode] = data.history.map(msg => ({
+            sender: msg.role === 'user' ? 'user' : 'ai',
+            text: msg.content
+          }));
+
+          hasServerHistory = data.history.length > 0;
+          updateHistoryStatus();
+
+          // Render the history
+          renderHistory(currentMode);
+        } else {
+          // If no history or error, just render what we have locally
+          renderHistory(currentMode);
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching history:', err);
+        renderHistory(currentMode);
+      });
+    }
+
+    // Update history status indicator
+    function updateHistoryStatus() {
+      if (hasServerHistory) {
+        historyStatus.classList.remove('hidden');
+        historyStatusText.textContent = `Using conversation history (${chatHistories[currentMode].length} messages)`;
+      } else {
+        historyStatus.classList.add('hidden');
+      }
+    }
 
     // Render history function
     function renderHistory(mode) {
       chatWindow.innerHTML = '';
+
+      if (chatHistories[mode].length === 0) {
+        chatWindow.innerHTML = `
+          <div class="text-center text-gray-500 my-8 py-8">
+            <p class="mb-3 text-lg">No conversation history yet.</p>
+            <p class="text-sm">Start by typing a question below.</p>
+          </div>
+        `;
+        return;
+      }
+
       chatHistories[mode].forEach(msg => appendMessage(msg.text, msg.sender));
+      updateHistoryStatus();
     }
 
     // Append message function
     function appendMessage(text, sender) {
+      // Handle multi-line messages
       const segments = text.split('\n').filter(s => s.trim());
-      if (segments.length > 1) { segments.forEach(s => appendMessage(s, sender)); return; }
-      let content = segments[0] || '';
-      if (content.length > 300) {
-        for (let i = 0; i < content.length; i += 300) {
-          appendMessage(content.slice(i, i + 300), sender);
-        }
+      if (segments.length > 1) {
+        // Create a single message with all segments
+        const wrapper = document.createElement('div');
+        wrapper.className = 'chat-message ' + (sender === 'user' ? 'user-message' : 'ai-message');
+
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+
+        segments.forEach(segment => {
+          const p = document.createElement('p');
+          p.className = 'mb-2';
+          p.textContent = segment;
+          contentDiv.appendChild(p);
+        });
+
+        // Add timestamp
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'message-time';
+        timeDiv.textContent = new Date().toLocaleTimeString();
+
+        wrapper.appendChild(contentDiv);
+        wrapper.appendChild(timeDiv);
+        chatWindow.appendChild(wrapper);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
         return;
       }
+
+      // Handle single line messages
+      let content = segments[0] || '';
+
+      // Handle very long messages
+      if (content.length > 500) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'chat-message ' + (sender === 'user' ? 'user-message' : 'ai-message');
+
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        contentDiv.textContent = content;
+
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'message-time';
+        timeDiv.textContent = new Date().toLocaleTimeString();
+
+        wrapper.appendChild(contentDiv);
+        wrapper.appendChild(timeDiv);
+        chatWindow.appendChild(wrapper);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        return;
+      }
+
+      // Standard message
       const wrapper = document.createElement('div');
-      wrapper.className = 'mb-2 flex ' + (sender === 'user' ? 'justify-end' : 'justify-start');
-      const bubble = document.createElement('div');
-      bubble.className = sender === 'user'
-        ? 'bg-blue-600 text-white p-2 rounded-lg max-w-xs'
-        : 'bg-gray-200 text-gray-800 p-2 rounded-lg max-w-xs';
-      bubble.textContent = content;
-      wrapper.appendChild(bubble);
+      wrapper.className = 'chat-message ' + (sender === 'user' ? 'user-message' : 'ai-message');
+
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'message-content';
+      contentDiv.textContent = content;
+
+      const timeDiv = document.createElement('div');
+      timeDiv.className = 'message-time';
+      timeDiv.textContent = new Date().toLocaleTimeString();
+
+      wrapper.appendChild(contentDiv);
+      wrapper.appendChild(timeDiv);
       chatWindow.appendChild(wrapper);
       chatWindow.scrollTop = chatWindow.scrollHeight;
     }
+
+    // Clear chat history
+    clearChatBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear the conversation history? This cannot be undone.')) {
+        // Send clear command to server
+        fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: '/clear',
+            mode: currentMode,
+            module: document.getElementById('moduleSelect').value
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.history_cleared) {
+            // Clear local history
+            chatHistories[currentMode] = [];
+            hasServerHistory = false;
+            updateHistoryStatus();
+            renderHistory(currentMode);
+            appendMessage('Conversation history has been cleared.', 'ai');
+          }
+        })
+        .catch(err => {
+          console.error('Error clearing history:', err);
+          appendMessage('Error clearing history: ' + err.message, 'ai');
+        });
+      }
+    });
+
+    // Export chat history
+    exportChatBtn.addEventListener('click', () => {
+      if (chatHistories[currentMode].length === 0) {
+        alert('No conversation history to export.');
+        return;
+      }
+
+      // Format the conversation for export
+      const currentModule = document.getElementById('moduleSelect').value;
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `devguide-ai-${currentMode}-${timestamp}.txt`;
+
+      let conversationText = `DevGuide AI - ${currentModule} - ${currentMode} Mode\n`;
+      conversationText += `Exported on: ${new Date().toLocaleString()}\n\n`;
+
+      chatHistories[currentMode].forEach(msg => {
+        const role = msg.sender === 'user' ? 'You' : 'AI';
+        conversationText += `${role}: ${msg.text}\n\n`;
+      });
+
+      // Create a download link
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(conversationText));
+      element.setAttribute('download', filename);
+      element.style.display = 'none';
+
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    });
+
+    // Search in chat button
+    const searchInChatBtn = document.getElementById('searchInChatBtn');
+    const suggestedQuestionsBtn = document.getElementById('suggestedQuestionsBtn');
+    const suggestedQuestions = document.getElementById('suggestedQuestions');
+
+    // Toggle suggested questions
+    suggestedQuestionsBtn.addEventListener('click', () => {
+      suggestedQuestions.classList.toggle('hidden');
+    });
+
+    // Handle suggested question clicks
+    document.querySelectorAll('.suggested-question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        chatInput.value = btn.textContent;
+        suggestedQuestions.classList.add('hidden');
+        sendBtn.click();
+      });
+    });
+
+    // Search in content button
+    searchInChatBtn.addEventListener('click', () => {
+      const query = chatInput.value.trim();
+      if (query.length < 2) {
+        appendMessage("Please enter a search term with at least 2 characters.", 'ai');
+        return;
+      }
+
+      // Show loading message in chat
+      appendMessage(`Searching for: "${query}"...`, 'ai');
+      console.log(`Chat search for: "${query}"`);
+
+      // Perform search
+      fetch(`/search?module=${encodeURIComponent(moduleSelect.value)}&q=${encodeURIComponent(query)}&per_page=3`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(`Chat search returned ${data.total || 0} results`);
+
+          // Check for error in response
+          if (data.error) {
+            throw new Error(data.error);
+          }
+
+          const results = data.results || [];
+
+          if (results.length === 0) {
+            appendMessage(`No results found for "${query}". Try a different search term.`, 'ai');
+            chatHistories[currentMode].push({
+              sender: 'ai',
+              text: `No results found for "${query}". Try a different search term.`
+            });
+            return;
+          }
+
+          // Format search results for chat
+          let resultsMessage = `Found ${data.total} results for "${query}". Here are the top matches:\n\n`;
+
+          results.forEach((result, index) => {
+            resultsMessage += `${index + 1}. **${result.section}**\n`;
+
+            // Get the matching paragraph
+            const matchParagraph = result.context_paragraphs && result.context_paragraphs.find(p => p && p.is_match);
+            if (matchParagraph) {
+              // Clean HTML tags for chat display
+              const cleanText = matchParagraph.text.replace(/<[^>]+>/g, '');
+              resultsMessage += `${cleanText.substring(0, 150)}${cleanText.length > 150 ? '...' : ''}\n\n`;
+            } else {
+              resultsMessage += `(Preview not available)\n\n`;
+            }
+
+            // Add link to section
+            resultsMessage += `[View in section](/?module=${encodeURIComponent(moduleSelect.value)}&section=${encodeURIComponent(result.section)})\n\n`;
+          });
+
+          // Add option to ask about results
+          resultsMessage += `Would you like me to explain any of these results?`;
+
+          // Display in chat
+          appendMessage(resultsMessage, 'ai');
+          chatHistories[currentMode].push({ sender: 'ai', text: resultsMessage });
+        })
+        .catch(err => {
+          console.error(`Chat search error: ${err.message}`);
+          const errorMsg = `Error searching: ${err.message}`;
+          appendMessage(errorMsg, 'ai');
+          chatHistories[currentMode].push({ sender: 'ai', text: errorMsg });
+        });
+    });
 
     // Send message handler
     sendBtn.addEventListener('click', () => {
       const message = chatInput.value.trim();
       if (!message) return;
+
+      // Display user message immediately
       appendMessage(message, 'user');
+
+      // Add to local history
       chatHistories[currentMode].push({ sender: 'user', text: message });
       chatInput.value = '';
+
+      // Check if message is a search command
+      if (message.startsWith('/search ')) {
+        const searchQuery = message.substring(8).trim();
+        if (searchQuery.length >= 2) {
+          // Trigger search
+          chatInput.value = searchQuery;
+          searchInChatBtn.click();
+        } else {
+          appendMessage("Please provide a search term with at least 2 characters.", 'ai');
+        }
+        return;
+      }
+
+      // Get current module
+      const currentModule = document.getElementById('moduleSelect').value;
+
+      // Determine if we should use streaming or regular endpoint
+      if (streamingEnabled) {
+        // Use streaming endpoint
+        handleStreamingChat(message, currentMode, currentModule);
+      } else {
+        // Use regular endpoint
+        handleRegularChat(message, currentMode, currentModule);
+      }
+    });
+
+    // Handle streaming chat
+    function handleStreamingChat(message, mode, module) {
+      // Create a streaming response container
+      const streamContainer = document.createElement('div');
+      streamContainer.className = 'chat-message ai-message';
+      streamContainer.innerHTML = `
+        <div class="message-content streaming-response">
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+        <div class="message-time">${new Date().toLocaleTimeString()}</div>
+      `;
+      chatWindow.appendChild(streamContainer);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+
+      // Get the response bubble
+      const responseBubble = streamContainer.querySelector('.streaming-response');
+
+      // Initialize variables for streaming
+      let fullResponse = '';
+      let isFirstChunk = true;
+      let eventSource = null;
+      let connectionTimeout = null;
+      let fallbackTriggered = false;
+
+      // Set a timeout for connection establishment
+      connectionTimeout = setTimeout(() => {
+        console.warn('Stream connection timeout');
+        if (!streamConnected && !fallbackTriggered) {
+          fallbackTriggered = true;
+          cleanupStreaming();
+          responseBubble.innerHTML = 'Connection timeout. Falling back to regular chat...';
+          handleRegularChat(message, mode, module);
+        }
+      }, 10000); // 10 seconds timeout
+
+      // First, create the EventSource to establish the SSE connection
+      // Add a unique timestamp to prevent caching
+      try {
+        console.log('Establishing SSE connection...');
+        eventSource = new EventSource(`/chat-stream?t=${Date.now()}`);
+        let streamConnected = false;
+        let streamId = null;
+
+        // Set up event handlers for the EventSource
+        eventSource.onmessage = function(event) {
+          try {
+            // Clear connection timeout since we received a message
+            if (connectionTimeout) {
+              clearTimeout(connectionTimeout);
+              connectionTimeout = null;
+            }
+
+            const data = JSON.parse(event.data);
+            console.log('Stream event received:', data.type);
+
+            switch(data.type) {
+              case 'connected':
+                // Store the stream ID for this connection
+                streamId = data.stream_id;
+                streamConnected = true;
+                console.log('Stream connected with ID:', streamId);
+
+                // Now that we're connected, send the message
+                sendMessageToStream();
+                break;
+
+              case 'ping':
+                // Just a keepalive, no action needed
+                break;
+
+              case 'user':
+                // User message event - no action needed as we already displayed it
+                break;
+
+              case 'start':
+                // Replace typing indicator with empty content
+                responseBubble.innerHTML = '';
+                isFirstChunk = true;
+                fullResponse = '';
+                break;
+
+              case 'chunk':
+                // For first chunk, clear the bubble
+                if (isFirstChunk) {
+                  responseBubble.innerHTML = '';
+                  isFirstChunk = false;
+                }
+
+                // Add the chunk to the full response
+                fullResponse += data.content;
+
+                // Update the bubble with the current text and a blinking cursor
+                responseBubble.innerHTML = fullResponse + '<span class="streaming-cursor"></span>';
+
+                // Scroll to bottom
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+                break;
+
+              case 'complete':
+                // Update with the complete response
+                fullResponse = data.content;
+                responseBubble.innerHTML = fullResponse;
+
+                // Add to history
+                chatHistories[mode].push({ sender: 'ai', text: fullResponse });
+
+                // Update history status
+                hasServerHistory = true;
+                updateHistoryStatus();
+                break;
+
+              case 'error':
+                // Show error
+                responseBubble.innerHTML = data.content;
+
+                // Add to history
+                chatHistories[mode].push({ sender: 'ai', text: data.content });
+
+                // If it's a network error, suggest disabling streaming
+                if (data.content.includes('Network connectivity') || data.content.includes('connection')) {
+                  const suggestionDiv = document.createElement('div');
+                  suggestionDiv.className = 'mt-2 text-xs text-red-600';
+                  suggestionDiv.innerHTML = 'Tip: Try disabling streaming responses if you continue to experience network issues.';
+                  responseBubble.appendChild(suggestionDiv);
+                }
+                break;
+
+              case 'end':
+                // Clean up resources
+                cleanupStreaming();
+                break;
+            }
+          } catch (err) {
+            console.error('Error parsing SSE data:', err, event.data);
+            if (!fallbackTriggered) {
+              fallbackTriggered = true;
+              responseBubble.innerHTML = 'Error processing response. Falling back to regular chat...';
+              cleanupStreaming();
+              handleRegularChat(message, mode, module);
+            }
+          }
+        };
+
+        // Handle errors
+        eventSource.onerror = function(err) {
+          console.error('EventSource error:', err);
+          if (!fallbackTriggered) {
+            fallbackTriggered = true;
+            responseBubble.innerHTML = 'Connection error. Falling back to regular chat...';
+
+            // Add to history
+            chatHistories[mode].push({ sender: 'ai', text: 'Connection error. Please try again.' });
+
+            cleanupStreaming();
+
+            // Fall back to regular chat
+            handleRegularChat(message, mode, module);
+
+            // Suggest disabling streaming
+            setTimeout(() => {
+              const suggestionDiv = document.createElement('div');
+              suggestionDiv.className = 'mb-2 flex justify-start';
+              suggestionDiv.innerHTML = `
+                <div class="bg-yellow-100 text-yellow-800 p-2 rounded-lg max-w-xs">
+                  Network issues detected. Consider disabling streaming responses using the toggle in the chat panel.
+                </div>
+              `;
+              chatWindow.appendChild(suggestionDiv);
+              chatWindow.scrollTop = chatWindow.scrollHeight;
+            }, 1000);
+          }
+        };
+      } catch (err) {
+        console.error('Error creating EventSource:', err);
+        if (!fallbackTriggered) {
+          fallbackTriggered = true;
+          responseBubble.innerHTML = 'Error establishing connection. Falling back to regular chat...';
+          cleanupStreaming();
+          handleRegularChat(message, mode, module);
+        }
+      }
+
+      // Function to clean up streaming resources
+      function cleanupStreaming() {
+        if (connectionTimeout) {
+          clearTimeout(connectionTimeout);
+          connectionTimeout = null;
+        }
+        if (eventSource) {
+          eventSource.close();
+          eventSource = null;
+        }
+      }
+
+      // Function to send the message once we have a stream connection
+      function sendMessageToStream() {
+        if (!streamConnected || !streamId) {
+          console.error('Cannot send message: Stream not connected');
+          // Retry a few times with increasing delay
+          let retryCount = 0;
+          const maxRetries = 3;
+
+          function retryConnection() {
+            if (retryCount < maxRetries) {
+              retryCount++;
+              console.log(`Retrying connection (${retryCount}/${maxRetries})...`);
+              setTimeout(sendMessageToStream, retryCount * 1000);
+            } else {
+              console.error('Max retries exceeded');
+              if (!fallbackTriggered) {
+                fallbackTriggered = true;
+                responseBubble.innerHTML = 'Connection failed after multiple attempts. Falling back to regular chat...';
+                cleanupStreaming();
+                handleRegularChat(message, mode, module);
+              }
+            }
+          }
+
+          retryConnection();
+          return;
+        }
+
+        // Set a timeout for the API request
+        const requestTimeout = setTimeout(() => {
+          console.warn('API request timeout');
+          if (!fallbackTriggered) {
+            fallbackTriggered = true;
+            responseBubble.innerHTML = 'Request timeout. Falling back to regular chat...';
+            cleanupStreaming();
+            handleRegularChat(message, mode, module);
+          }
+        }, 15000); // 15 seconds timeout
+
+        fetch('/chat-stream', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message,
+            section: '{{ current_section }}',
+            mode,
+            module
+          })
+        })
+        .then(response => {
+          clearTimeout(requestTimeout);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.status === 'error') {
+            throw new Error(data.message);
+          }
+          console.log('Response ready for streaming:', data.message);
+        })
+        .catch(err => {
+          clearTimeout(requestTimeout);
+          console.error('Error initiating streaming:', err);
+
+          if (!fallbackTriggered) {
+            fallbackTriggered = true;
+
+            // Show error in the response bubble
+            responseBubble.innerHTML = `Error: ${err.message}. Falling back to regular chat...`;
+
+            // Add to history
+            chatHistories[mode].push({ sender: 'ai', text: `Error: ${err.message}` });
+
+            cleanupStreaming();
+
+            // Fall back to regular chat
+            console.log('Falling back to regular chat...');
+            handleRegularChat(message, mode, module);
+          }
+        });
+      }
+    }
+
+    // Handle regular chat
+    function handleRegularChat(message, mode, module) {
+      // Show typing indicator
+      const typingIndicator = document.createElement('div');
+      typingIndicator.className = 'mb-2 flex justify-start';
+      typingIndicator.innerHTML = `
+        <div class="bg-gray-200 text-gray-800 p-2 rounded-lg max-w-xs">
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      `;
+      chatWindow.appendChild(typingIndicator);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+
+      // Set a timeout for the API request
+      const requestTimeout = setTimeout(() => {
+        console.warn('Regular chat request timeout');
+        // Remove typing indicator
+        if (typingIndicator && typingIndicator.parentNode) {
+          typingIndicator.parentNode.removeChild(typingIndicator);
+        }
+
+        const timeoutMsg = 'Request timeout. Please check your internet connection and try again.';
+        chatHistories[mode].push({ sender: 'ai', text: timeoutMsg });
+        appendMessage(timeoutMsg, 'ai');
+
+        // Add suggestion about network issues
+        setTimeout(() => {
+          const suggestionDiv = document.createElement('div');
+          suggestionDiv.className = 'mb-2 flex justify-start';
+          suggestionDiv.innerHTML = `
+            <div class="bg-yellow-100 text-yellow-800 p-2 rounded-lg max-w-xs">
+              Network issues detected. Please check your internet connection.
+            </div>
+          `;
+          chatWindow.appendChild(suggestionDiv);
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+        }, 500);
+      }, 30000); // 30 seconds timeout
+
+      // Regular chat message
       fetch('/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, section: '{{ current_section }}', mode: currentMode, module: document.getElementById('moduleSelect').value })
+        body: JSON.stringify({
+          message,
+          section: '{{ current_section }}',
+          mode,
+          module
+        }),
+        // Add timeout to fetch request
+        signal: AbortSignal.timeout(25000) // 25 seconds timeout
       })
-      .then(res => res.json())
+      .then(res => {
+        clearTimeout(requestTimeout);
+        if (!res.ok) {
+          throw new Error(`Server returned ${res.status}: ${res.statusText}`);
+        }
+        return res.json();
+      })
       .then(data => {
-        const aiText = data.response || data.error;
-        chatHistories[currentMode].push({ sender: 'ai', text: aiText });
+        // Remove typing indicator
+        if (typingIndicator && typingIndicator.parentNode) {
+          typingIndicator.parentNode.removeChild(typingIndicator);
+        }
+
+        const aiText = data.response || data.error || 'No response received';
+
+        // Add to local history
+        chatHistories[mode].push({ sender: 'ai', text: aiText });
+
+        // Display AI response
         appendMessage(aiText, 'ai');
+
+        // Update history status if needed
+        if (data.has_history) {
+          hasServerHistory = true;
+          updateHistoryStatus();
+        }
+
+        // If history was cleared, update UI
+        if (data.history_cleared) {
+          hasServerHistory = false;
+          updateHistoryStatus();
+        }
+
+        // If there's a network-related error message, add a suggestion
+        if (aiText.includes('Network connectivity') ||
+            aiText.includes('connection') ||
+            aiText.includes('internet')) {
+          setTimeout(() => {
+            const suggestionDiv = document.createElement('div');
+            suggestionDiv.className = 'mb-2 flex justify-start';
+            suggestionDiv.innerHTML = `
+              <div class="bg-yellow-100 text-yellow-800 p-2 rounded-lg max-w-xs">
+                Network issues detected. Please check your internet connection.
+              </div>
+            `;
+            chatWindow.appendChild(suggestionDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+          }, 500);
+        }
       })
       .catch(err => {
-        const errMsg = 'Error: ' + err.message;
-        chatHistories[currentMode].push({ sender: 'ai', text: errMsg });
+        clearTimeout(requestTimeout);
+
+        // Remove typing indicator
+        if (typingIndicator && typingIndicator.parentNode) {
+          typingIndicator.parentNode.removeChild(typingIndicator);
+        }
+
+        // Format error message
+        let errMsg = 'Error: ' + err.message;
+
+        // Add more helpful message for common errors
+        if (err.name === 'AbortError') {
+          errMsg = 'Request timed out. Please check your internet connection and try again.';
+        } else if (err.message.includes('NetworkError') || err.message.includes('network')) {
+          errMsg = 'Network error. Please check your internet connection and try again.';
+        } else if (err.message.includes('Failed to fetch')) {
+          errMsg = 'Failed to connect to the server. Please check your internet connection and try again.';
+        }
+
+        // Add to local history
+        chatHistories[mode].push({ sender: 'ai', text: errMsg });
+
+        // Display error message
         appendMessage(errMsg, 'ai');
+
+        // Add suggestion about network issues
+        setTimeout(() => {
+          const suggestionDiv = document.createElement('div');
+          suggestionDiv.className = 'mb-2 flex justify-start';
+          suggestionDiv.innerHTML = `
+            <div class="bg-yellow-100 text-yellow-800 p-2 rounded-lg max-w-xs">
+              Network issues detected. Please check your internet connection.
+            </div>
+          `;
+          chatWindow.appendChild(suggestionDiv);
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+        }, 500);
       });
-    });
+    }
 
     // Send on Enter
     chatInput.addEventListener('keydown', (e) => {
@@ -445,4 +1935,4 @@
     });
     </script>
 </body>
-</html> 
+</html>

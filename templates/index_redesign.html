@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevGuide AI - {{ current_module }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base styles */
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .module-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        /* Search results styles */
+        .search-results {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .search-highlight {
+            background-color: #FFEB3B;
+        }
+        mark {
+            background-color: #FFEB3B;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        .search-result-item {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 12px;
+            transition: background-color 0.2s;
+        }
+        .search-result-item:hover {
+            background-color: #f9fafb;
+        }
+        .search-result-section {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 4px;
+        }
+
+        /* Table of contents styles */
+        .toc-item {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .toc-item:hover {
+            background-color: #f3f4f6;
+        }
+        .toc-item.active {
+            border-left-color: #4f46e5;
+            background-color: #eff6ff;
+        }
+
+        /* Section content styles */
+        .content-section {
+            line-height: 1.8;
+        }
+        .content-section p {
+            margin-bottom: 1.25rem;
+        }
+        .content-section h2, .content-section h3 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .content-section h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .content-section h3 {
+            font-size: 1.25rem;
+            color: #374151;
+        }
+
+        /* Footnote styles */
+        .footnote-link {
+            color: #4f46e5;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 0.75em;
+            vertical-align: super;
+            margin-left: 0.2em;
+        }
+        .footnotes-section {
+            margin-top: 3rem;
+            padding: 2rem;
+            background-color: #f9fafb;
+            border-radius: 0.5rem;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        /* Chat panel styles */
+        .chat-panel {
+            transition: transform 0.3s ease-in-out;
+        }
+        .chat-message {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        .user-message {
+            background-color: #f3f4f6;
+        }
+        .ai-message {
+            background-color: #eff6ff;
+        }
+
+        /* Mode toggle styles */
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .mode-toggle i {
+            margin-right: 0.5rem;
+        }
+        .chat-mode {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .learning-mode {
+            background-color: #8b5cf6;
+            color: white;
+        }
+
+        /* Learning mode specific styles */
+        .learning-message {
+            background-color: #f0ecfe;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        /* Progress indicator */
+        .learning-progress {
+            display: flex;
+            align-items: center;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+        .learning-progress-bar {
+            height: 4px;
+            background-color: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 0 0.5rem;
+            flex-grow: 1;
+        }
+        .learning-progress-fill {
+            height: 100%;
+            background-color: #8b5cf6;
+            transition: width 0.3s ease;
+        }
+
+        /* Learning tips */
+        .learning-tip {
+            margin: 1rem 0;
+            padding: 0.75rem;
+            background-color: #f8f5ff;
+            border: 1px solid #e9d8fd;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b46c1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex flex-col">
+        <!-- Hero Header -->
+        <header class="hero-section text-white">
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h1 class="text-3xl font-bold">DevGuide AI</h1>
+                        <p class="text-xl opacity-90 mt-1">{{ current_module }}</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3 items-center">
+                        <!-- Module Selector -->
+                        <div class="relative">
+                            <select id="moduleSelect" class="pl-4 pr-10 py-2 bg-white bg-opacity-10 backdrop-filter backdrop-blur-sm border border-white border-opacity-20 rounded-lg text-white appearance-none">
+                                {% for module in modules %}
+                                <option value="{{ module }}" {% if module == current_module %}selected{% endif %}>{{ module }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+
+                        <!-- All Modules Button -->
+                        <a href="/modules" class="px-4 py-2 bg-white bg-opacity-10 backdrop-filter backdrop-blur-sm border border-white border-opacity-20 rounded-lg text-white hover:bg-opacity-20 transition-colors">
+                            <i class="fas fa-th-large mr-2"></i>All Modules
+                        </a>
+
+                        <!-- Glossary Button -->
+                        <a href="/?module={{ current_module }}&section=Glossary of Terms" class="px-4 py-2 bg-white bg-opacity-10 backdrop-filter backdrop-blur-sm border border-white border-opacity-20 rounded-lg text-white hover:bg-opacity-20 transition-colors">
+                            <i class="fas fa-book mr-2"></i>Glossary
+                        </a>
+
+                        <!-- Search Box -->
+                        <div class="relative w-64 md:w-80">
+                            <div class="flex">
+                                <input type="text" id="search" placeholder="Search content..." class="w-full pl-10 pr-4 py-2 bg-white bg-opacity-10 backdrop-filter backdrop-blur-sm border border-white border-opacity-20 rounded-lg text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-white text-opacity-70"></i>
+                                </div>
+                            </div>
+                            <!-- Search results dropdown -->
+                            <div id="searchResults" class="absolute w-full mt-2 bg-white rounded-lg shadow-lg hidden z-20 max-h-96 overflow-y-auto">
+                                <div id="searchResultsList"></div>
+                                <div id="searchPagination" class="p-2 hidden"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow py-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {% if error %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+                    <span class="block sm:inline">{{ error }}</span>
+                </div>
+                {% endif %}
+
+                <div class="flex flex-col md:flex-row gap-8">
+                    <!-- Table of Contents Sidebar -->
+                    <div class="md:w-1/4">
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden sticky top-8">
+                            <div class="px-6 py-5 bg-indigo-600 text-white">
+                                <h2 class="text-lg font-semibold">Table of Contents</h2>
+                            </div>
+                            <div class="divide-y divide-gray-100">
+                                <nav class="py-2">
+                                    {% for section in hierarchy %}
+                                    <div>
+                                        <a href="/?module={{ current_module }}&section={{ section.title|urlencode }}"
+                                           class="toc-item px-6 py-3 flex items-center text-gray-800 hover:text-indigo-600 font-bold text-lg {% if section.title == current_section %}active text-indigo-600{% endif %}">
+                                            {{ section.title }}
+                                        </a>
+
+                                        {% for subsection in section.subsections %}
+                                        <a href="/?module={{ current_module }}&section={{ subsection.title|urlencode }}"
+                                           class="toc-item pl-10 pr-6 py-2 flex items-center text-sm text-gray-700 hover:text-indigo-600 {% if subsection.title == current_section %}active font-medium text-indigo-600{% endif %}">
+                                            {{ subsection.title }}
+                                        </a>
+
+                                        {% if subsection.subsections %}
+                                        {% for subsubsection in subsection.subsections %}
+                                        <a href="/?module={{ current_module }}&section={{ subsubsection.title|urlencode }}"
+                                           class="toc-item pl-14 pr-6 py-2 flex items-center text-xs text-gray-600 hover:text-indigo-600 {% if subsubsection.title == current_section %}active font-medium text-indigo-600{% endif %}">
+                                            {{ subsubsection.title }}
+                                        </a>
+                                        {% endfor %}
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Area -->
+                    <div class="md:w-3/4">
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                            <!-- Breadcrumb Navigation -->
+                            <div class="px-8 py-6 border-b border-gray-100">
+                                <nav class="flex items-center space-x-2 text-sm text-gray-500">
+                                    <a href="/modules" class="hover:text-indigo-600 transition-colors">
+                                        <i class="fas fa-home"></i>
+                                    </a>
+                                    <span>/</span>
+                                    <a href="/?module={{ current_module }}" class="hover:text-indigo-600 transition-colors">{{ current_module }}</a>
+                                    <span>/</span>
+                                    <span class="font-medium text-gray-900">{{ current_section }}</span>
+                                </nav>
+                                <h1 class="text-2xl font-bold text-gray-900 mt-4">{{ current_section }}</h1>
+                            </div>
+
+                            <!-- Section Content -->
+                            <div class="px-8 py-6">
+                                <div class="content-section prose max-w-none">
+                                    {% if section_content %}
+                                        {% if current_section == 'Glossary of Terms' %}
+                                            <dl class="space-y-6">
+                                            {% for paragraph in section_content.split('\n') %}
+                                                {% if ':' in paragraph %}
+                                                    {% set term_def = paragraph.split(':', 1) %}
+                                                    <dt id="{{ term_def[0]|trim }}" class="text-lg font-semibold text-indigo-700">{{ term_def[0]|trim }}</dt>
+                                                    <dd class="ml-6 text-gray-700">{{ term_def[1] | safe }}</dd>
+                                                {% else %}
+                                                    <p class="text-gray-700">{{ paragraph | safe }}</p>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </dl>
+                                        {% else %}
+                                            {% for paragraph in section_content.split('\n') %}
+                                                {% if paragraph.startswith('<h') or paragraph.startswith('<strong>') %}
+                                                    {{ paragraph | safe }}
+                                                {% else %}
+                                                    <p>{{ paragraph | safe }}</p>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% else %}
+                                        <p class="text-gray-500 italic">No content available for this section.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Navigation Controls -->
+                            <div class="px-8 py-6 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                {% if prev_section %}
+                                <a href="/?module={{ current_module }}&section={{ prev_section|urlencode }}"
+                                   class="flex items-center px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-arrow-left mr-2"></i> Previous
+                                </a>
+                                {% else %}
+                                <div></div>
+                                {% endif %}
+
+                                {% if next_section %}
+                                <a href="/?module={{ current_module }}&section={{ next_section|urlencode }}"
+                                   class="flex items-center px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                                    Next <i class="fas fa-arrow-right ml-2"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white py-8 mt-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="text-xl font-bold">DevGuide AI</h3>
+                        <p class="text-gray-400">Your intelligent guide to real estate development</p>
+                    </div>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-question-circle mr-1"></i>Help
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-info-circle mr-1"></i>About
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-envelope mr-1"></i>Contact
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400 text-sm">
+                    &copy; 2024 DevGuide AI. All rights reserved.
+                </div>
+            </div>
+        </footer>
+
+        <!-- Floating Chat Button -->
+        <button id="chatToggleBtn" class="fixed bottom-6 right-6 bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg focus:outline-none transition-colors">
+            <i class="fas fa-comments"></i>
+        </button>
+
+        <!-- Chat Panel -->
+        <div id="chatPanel" class="chat-panel fixed bottom-0 right-0 transform translate-y-full bg-white w-full max-w-md h-3/4 shadow-xl rounded-t-lg flex flex-col z-50">
+            <div class="flex items-center justify-between p-5 border-b">
+                <h3 class="text-lg font-medium text-gray-900">Ask the AI</h3>
+                <div class="flex space-x-3">
+                    <button id="modeToggle" title="Switch to Learning Mode to have a pointed, Socratic conversation with the AI." class="mode-toggle chat-mode focus:outline-none">
+                        <i class="fas fa-comment"></i><span>Chat Mode</span>
+                    </button>
+                    <button id="chatCloseBtn" class="text-gray-500 hover:text-gray-700 focus:outline-none text-xl">&times;</button>
+                </div>
+            </div>
+            <div id="chatWindow" class="flex-1 overflow-y-auto p-6 bg-gray-50"></div>
+            <div class="p-5 border-t">
+                <div class="flex mb-3">
+                    <input id="chatInput" type="text" placeholder="Type your question..." class="flex-grow px-4 py-3 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <button id="sendBtn" class="px-5 py-3 bg-indigo-600 text-white rounded-r-lg hover:bg-indigo-700">Send</button>
+                </div>
+                <div class="flex justify-between text-sm text-gray-500 mb-3">
+                    <button id="searchInChatBtn" class="hover:text-indigo-600 flex items-center">
+                        <i class="fas fa-search mr-2"></i>
+                        Search in content
+                    </button>
+                    <div class="flex items-center">
+                        <span class="mr-2">Streaming:</span>
+                        <label class="switch">
+                            <input type="checkbox" id="streamingToggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex justify-between text-sm text-gray-500">
+                    <button id="clearChatBtn" class="hover:text-indigo-600 flex items-center">
+                        <i class="fas fa-trash-alt mr-2"></i>
+                        Clear history
+                    </button>
+                    <button id="exportChatBtn" class="hover:text-indigo-600 flex items-center">
+                        <i class="fas fa-download mr-2"></i>
+                        Export conversation
+                    </button>
+                </div>
+                <div id="historyStatus" class="mt-3 text-xs text-gray-500 flex items-center">
+                    <i class="fas fa-history mr-2"></i>
+                    <span id="historyStatusText">No conversation history</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for module selection and chat functionality -->
+    <script>
+        // Handle module selection change
+        document.getElementById('moduleSelect').addEventListener('change', function() {
+            // Store current chat state before navigation
+            localStorage.setItem('lastModule', document.getElementById('moduleSelect').value);
+            localStorage.setItem('lastMode', currentMode || 'chat');
+
+            // Navigate to new module
+            window.location.href = '/?module=' + encodeURIComponent(this.value);
+        });
+
+        // Chat functionality
+        const chatToggleBtn = document.getElementById('chatToggleBtn');
+        const chatPanel = document.getElementById('chatPanel');
+        const chatCloseBtn = document.getElementById('chatCloseBtn');
+        const modeToggleBtn = document.getElementById('modeToggle');
+        const chatWindow = document.getElementById('chatWindow');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const clearChatBtn = document.getElementById('clearChatBtn');
+        const exportChatBtn = document.getElementById('exportChatBtn');
+        const historyStatus = document.getElementById('historyStatus');
+        const historyStatusText = document.getElementById('historyStatusText');
+        const streamingToggle = document.getElementById('streamingToggle');
+        const searchInChatBtn = document.getElementById('searchInChatBtn');
+
+        // Initialize streaming setting from localStorage
+        let streamingEnabled = localStorage.getItem('streamingEnabled') !== 'false';
+        streamingToggle.checked = streamingEnabled;
+
+        // Open/close panel
+        chatToggleBtn.addEventListener('click', () => {
+            const wasClosed = chatPanel.classList.contains('translate-y-full');
+            chatPanel.classList.toggle('translate-y-full');
+
+            // Fetch history when opening panel
+            if (wasClosed) {
+                fetchServerHistory();
+
+                // Focus on input field for better UX
+                setTimeout(() => {
+                    chatInput.focus();
+                }, 300);
+            }
+        });
+
+        chatCloseBtn.addEventListener('click', () => {
+            chatPanel.classList.add('translate-y-full');
+        });
+
+        // Mode toggle
+        let currentMode = localStorage.getItem('lastMode') || 'chat';
+        const chatHistories = { chat: [], learning: [] };
+        let hasServerHistory = false;
+
+        // Update mode toggle button appearance based on current mode
+        function updateModeToggleAppearance() {
+            if (currentMode === 'chat') {
+                modeToggleBtn.classList.remove('learning-mode');
+                modeToggleBtn.classList.add('chat-mode');
+                modeToggleBtn.innerHTML = '<i class="fas fa-comment"></i><span>Chat Mode</span>';
+                modeToggleBtn.title = 'Switch to Learning Mode to have a pointed, Socratic conversation with the AI.';
+            } else {
+                modeToggleBtn.classList.remove('chat-mode');
+                modeToggleBtn.classList.add('learning-mode');
+                modeToggleBtn.innerHTML = '<i class="fas fa-graduation-cap"></i><span>Learning Mode</span>';
+                modeToggleBtn.title = 'Switch back to Chat Mode for direct answers from the AI.';
+            }
+        }
+
+        // Initialize mode toggle appearance
+        updateModeToggleAppearance();
+
+        modeToggleBtn.addEventListener('click', () => {
+            currentMode = currentMode === 'chat' ? 'learning' : 'chat';
+            updateModeToggleAppearance();
+
+            // Save current mode to localStorage
+            localStorage.setItem('lastMode', currentMode);
+
+            // Fetch history for the new mode
+            fetchServerHistory();
+
+            // Show learning mode tip if switching to learning mode
+            if (currentMode === 'learning' && (!chatHistories.learning || chatHistories.learning.length === 0)) {
+                showLearningModeTip();
+            }
+        });
+
+        // Function to show a learning mode tip
+        function showLearningModeTip() {
+            const tipElement = document.createElement('div');
+            tipElement.className = 'learning-tip';
+            tipElement.innerHTML = `
+                <p><strong>Learning Mode Tips:</strong></p>
+                <p>In Learning Mode, the AI will guide you through understanding concepts using the Socratic method rather than giving direct answers.</p>
+                <p>Be prepared to engage in a dialogue and think critically about the questions posed.</p>
+            `;
+            chatWindow.appendChild(tipElement);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Toggle streaming setting
+        streamingToggle.addEventListener('change', () => {
+            streamingEnabled = streamingToggle.checked;
+            localStorage.setItem('streamingEnabled', streamingEnabled);
+        });
+
+        // Fetch history from server
+        function fetchServerHistory() {
+            const currentModule = document.getElementById('moduleSelect').value;
+
+            // Show loading indicator in chat window if empty
+            if (chatWindow.innerHTML === '') {
+                chatWindow.innerHTML = '<div class="text-center text-gray-500 my-4 py-2">Loading conversation history...</div>';
+            }
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: '/history',
+                    mode: currentMode,
+                    module: currentModule
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.history && Array.isArray(data.history)) {
+                    // Convert server history format to client format if needed
+                    chatHistories[currentMode] = data.history.map(msg => ({
+                        sender: msg.role || (msg.sender || (msg.content ? (msg.content.includes('user') ? 'user' : 'ai') : 'ai')),
+                        text: msg.content || msg.text || ''
+                    }));
+
+                    hasServerHistory = chatHistories[currentMode].length > 0;
+                    updateHistoryStatus();
+                    renderHistory(currentMode);
+
+                    // If chat panel is open, scroll to bottom
+                    if (!chatPanel.classList.contains('translate-y-full')) {
+                        chatWindow.scrollTop = chatWindow.scrollHeight;
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching history:', err);
+                chatWindow.innerHTML = '<div class="text-center text-red-500 my-4 py-2">Error loading history. Please try again.</div>';
+            });
+        }
+
+        // Load history on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch history for current mode
+            fetchServerHistory();
+
+            // Also set up a timer to periodically check for history updates
+            // This helps keep the chat history in sync across tabs/windows
+            setInterval(function() {
+                if (!chatPanel.classList.contains('translate-y-full')) {
+                    // Only refresh if chat panel is open
+                    fetchServerHistory();
+                }
+            }, 30000); // Check every 30 seconds
+        });
+
+        // Update history status indicator
+        function updateHistoryStatus() {
+            const count = chatHistories[currentMode].length;
+            historyStatusText.textContent = count > 0
+                ? `${count} message${count === 1 ? '' : 's'} in conversation`
+                : 'No conversation history';
+        }
+
+        // Render chat history
+        function renderHistory(mode) {
+            chatWindow.innerHTML = '';
+
+            if (chatHistories[mode].length === 0) {
+                chatWindow.innerHTML = `
+                    <div class="text-center text-gray-500 my-8 py-8">
+                        <p class="mb-3 text-lg">No conversation history yet.</p>
+                        <p class="text-sm">Start by typing a question below.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            chatHistories[mode].forEach(msg => {
+                // Handle different message formats
+                const text = msg.text || msg.content || '';
+                const sender = msg.sender || (msg.role === 'user' ? 'user' : 'ai');
+
+                if (text) {
+                    appendMessage(text, sender);
+                }
+            });
+
+            // Scroll to bottom after rendering
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Append message to chat window
+        function appendMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `mb-4 flex justify-${sender === 'user' ? 'end' : 'start'}`;
+
+            const messageBubble = document.createElement('div');
+
+            // Apply different styling based on mode and sender
+            if (sender === 'user') {
+                messageBubble.className = 'bg-indigo-100 text-indigo-900 p-3 rounded-lg max-w-xs md:max-w-md';
+            } else {
+                // Apply learning mode styling for AI messages in learning mode
+                if (currentMode === 'learning') {
+                    messageBubble.className = 'learning-message p-3 rounded-lg max-w-xs md:max-w-md';
+                } else {
+                    messageBubble.className = 'bg-gray-100 text-gray-800 p-3 rounded-lg max-w-xs md:max-w-md';
+                }
+            }
+
+            messageBubble.textContent = text;
+            messageDiv.appendChild(messageBubble);
+            chatWindow.appendChild(messageDiv);
+
+            // Add progress indicator for learning mode
+            if (currentMode === 'learning' && sender === 'ai') {
+                // Count the number of exchanges (pairs of user and AI messages)
+                const exchanges = Math.floor(chatHistories.learning.length / 2);
+
+                if (exchanges > 0) {
+                    const progressDiv = document.createElement('div');
+                    progressDiv.className = 'learning-progress';
+
+                    // Calculate progress percentage (max out at 5 exchanges for 100%)
+                    const progressPercent = Math.min(exchanges / 5 * 100, 100);
+
+                    progressDiv.innerHTML = `
+                        <span>Learning progress:</span>
+                        <div class="learning-progress-bar">
+                            <div class="learning-progress-fill" style="width: ${progressPercent}%"></div>
+                        </div>
+                        <span>${exchanges} exchange${exchanges !== 1 ? 's' : ''}</span>
+                    `;
+
+                    chatWindow.appendChild(progressDiv);
+                }
+            }
+
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Clear chat history
+        clearChatBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear the conversation history? This cannot be undone.')) {
+                const currentModule = document.getElementById('moduleSelect').value;
+
+                // Use the dedicated clear-history endpoint
+                fetch('/clear-history', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        mode: currentMode,
+                        module: currentModule
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    // Clear local history
+                    chatHistories[currentMode] = [];
+                    hasServerHistory = false;
+                    updateHistoryStatus();
+                    renderHistory(currentMode);
+                    appendMessage('Conversation history has been cleared.', 'ai');
+                })
+                .catch(err => {
+                    console.error('Error clearing history:', err);
+                    appendMessage('Error clearing history. Please try again.', 'ai');
+                });
+            }
+        });
+
+        // Export conversation
+        exportChatBtn.addEventListener('click', () => {
+            if (chatHistories[currentMode].length === 0) {
+                appendMessage('No conversation to export.', 'ai');
+                return;
+            }
+
+            let exportText = `# DevGuide AI Conversation - ${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)} Mode\n\n`;
+            exportText += `Date: ${new Date().toLocaleString()}\n\n`;
+
+            chatHistories[currentMode].forEach(msg => {
+                const role = msg.sender || (msg.role === 'user' ? 'User' : 'AI');
+                exportText += `## ${role.charAt(0).toUpperCase() + role.slice(1)}\n${msg.text}\n\n`;
+            });
+
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `devguide-ai-conversation-${currentMode}-${new Date().toISOString().slice(0, 10)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // Search in content
+        searchInChatBtn.addEventListener('click', () => {
+            const query = chatInput.value.trim();
+            if (query.length < 2) {
+                appendMessage("Please enter a search term with at least 2 characters.", 'ai');
+                return;
+            }
+
+            appendMessage(`Searching for: "${query}"...`, 'ai');
+            const currentModule = document.getElementById('moduleSelect').value;
+
+            fetch(`/search?module=${encodeURIComponent(currentModule)}&q=${encodeURIComponent(query)}&per_page=3`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    const results = data.results || [];
+                    if (results.length === 0) {
+                        appendMessage(`No results found for "${query}". Try a different search term.`, 'ai');
+                        return;
+                    }
+
+                    let resultsMessage = `Found ${results.length} result${results.length === 1 ? '' : 's'} for "${query}":\n\n`;
+                    results.forEach((result, index) => {
+                        resultsMessage += `${index + 1}. ${result.section}: ${result.preview}\n`;
+                    });
+
+                    appendMessage(resultsMessage, 'ai');
+                })
+                .catch(err => {
+                    console.error('Search error:', err);
+                    appendMessage(`Error searching for "${query}": ${err.message}`, 'ai');
+                });
+        });
+
+        // Send message
+        sendBtn.addEventListener('click', () => {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Display user message immediately
+            appendMessage(message, 'user');
+            chatInput.value = '';
+
+            const currentModule = document.getElementById('moduleSelect').value;
+
+            // Show typing indicator
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'mb-2 flex justify-start';
+            typingIndicator.innerHTML = `
+                <div class="bg-gray-100 text-gray-800 p-3 rounded-lg">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            chatWindow.appendChild(typingIndicator);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            // Add user message to local history immediately
+            chatHistories[currentMode].push({ sender: 'user', text: message });
+            updateHistoryStatus();
+
+            // Use streaming if enabled, otherwise use regular chat
+            if (streamingEnabled) {
+                handleStreamingChat(message, currentModule);
+            } else {
+                handleRegularChat(message, currentModule, typingIndicator);
+            }
+        });
+
+        // Handle regular (non-streaming) chat
+        function handleRegularChat(message, currentModule, typingIndicator) {
+            fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message,
+                    mode: currentMode,
+                    module: currentModule
+                })
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Server returned ${res.status}: ${res.statusText}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                // Remove typing indicator
+                if (typingIndicator && typingIndicator.parentNode) {
+                    typingIndicator.parentNode.removeChild(typingIndicator);
+                }
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Display AI response
+                appendMessage(data.response, 'ai');
+
+                // Add AI response to local history
+                chatHistories[currentMode].push({ sender: 'ai', text: data.response });
+                updateHistoryStatus();
+
+                // After receiving a response, fetch the updated history from the server
+                // This ensures our local history stays in sync with the server
+                setTimeout(fetchServerHistory, 500);
+            })
+            .catch(err => {
+                console.error('Chat error:', err);
+
+                // Remove typing indicator
+                if (typingIndicator && typingIndicator.parentNode) {
+                    typingIndicator.parentNode.removeChild(typingIndicator);
+                }
+
+                appendMessage(`Error: ${err.message}. Please try again.`, 'ai');
+            });
+        }
+
+        // Handle streaming chat
+        function handleStreamingChat(message, currentModule) {
+            // This is a placeholder for streaming implementation
+            // For now, just use regular chat
+            const typingIndicator = document.querySelector('.typing-indicator')?.closest('.mb-2');
+            handleRegularChat(message, currentModule, typingIndicator);
+        }
+
+        // Send on Enter
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendBtn.click();
+        });
+
+        // Add styles for toggle switch
+        const style = document.createElement('style');
+        style.textContent = `
+            .switch {
+                position: relative;
+                display: inline-block;
+                width: 40px;
+                height: 20px;
+            }
+            .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: .4s;
+            }
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 16px;
+                width: 16px;
+                left: 2px;
+                bottom: 2px;
+                background-color: white;
+                transition: .4s;
+            }
+            input:checked + .slider {
+                background-color: #4f46e5;
+            }
+            input:focus + .slider {
+                box-shadow: 0 0 1px #4f46e5;
+            }
+            input:checked + .slider:before {
+                transform: translateX(20px);
+            }
+            .slider.round {
+                border-radius: 20px;
+            }
+            .slider.round:before {
+                border-radius: 50%;
+            }
+            .typing-indicator {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .typing-indicator span {
+                height: 8px;
+                width: 8px;
+                margin: 0 2px;
+                background-color: #9ca3af;
+                border-radius: 50%;
+                display: inline-block;
+                animation: typing 1.4s infinite ease-in-out both;
+            }
+            .typing-indicator span:nth-child(1) {
+                animation-delay: 0s;
+            }
+            .typing-indicator span:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+            .typing-indicator span:nth-child(3) {
+                animation-delay: 0.4s;
+            }
+            @keyframes typing {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.5); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Search functionality
+        const searchInput = document.getElementById('search');
+        const searchResults = document.getElementById('searchResults');
+        const searchResultsList = document.getElementById('searchResultsList');
+        const searchPagination = document.getElementById('searchPagination');
+        let searchTimeout;
+        let currentQuery = '';
+        let currentPage = 1;
+        let currentPerPage = 10;
+
+        // Add search styles
+        const searchStyle = document.createElement('style');
+        searchStyle.textContent = `
+            .search-results {
+                max-height: 500px;
+                overflow-y: auto;
+            }
+            .search-result-item {
+                border-bottom: 1px solid #e5e7eb;
+                padding: 12px;
+                transition: background-color 0.2s;
+            }
+            .search-result-item:hover {
+                background-color: #f9fafb;
+            }
+            .search-result-section {
+                font-weight: 600;
+                color: #4f46e5;
+                margin-bottom: 4px;
+            }
+            .search-result-breadcrumb {
+                font-size: 0.75rem;
+                color: #6b7280;
+                margin-bottom: 4px;
+            }
+            .search-result-context {
+                font-size: 0.875rem;
+                color: #374151;
+            }
+            .search-result-match {
+                margin-bottom: 0.5rem;
+            }
+            mark {
+                background-color: #fef08a;
+                padding: 0 2px;
+                border-radius: 2px;
+            }
+            .search-pagination {
+                display: flex;
+                justify-content: center;
+                gap: 0.5rem;
+                padding: 0.5rem;
+                border-top: 1px solid #e5e7eb;
+            }
+            .page-button {
+                padding: 0.25rem 0.5rem;
+                border: 1px solid #d1d5db;
+                border-radius: 0.25rem;
+                background-color: #f9fafb;
+                font-size: 0.75rem;
+                cursor: pointer;
+            }
+            .page-button.active {
+                background-color: #4f46e5;
+                color: white;
+                border-color: #4f46e5;
+            }
+            .page-button:hover:not(.active) {
+                background-color: #f3f4f6;
+            }
+        `;
+        document.head.appendChild(searchStyle);
+
+        // Basic search input handler
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            currentQuery = query;
+
+            if (query.length < 2) {
+                searchResults.classList.add('hidden');
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                performSearch();
+            }, 300);
+        });
+
+        // Search execution function
+        function performSearch() {
+            const query = currentQuery;
+            if (query.length < 2) return;
+
+            console.log(`Performing search for: "${query}"`);
+
+            // Build search URL with parameters
+            const currentModule = document.getElementById('moduleSelect').value;
+            const searchUrl = `/search?module=${encodeURIComponent(currentModule)}&q=${encodeURIComponent(query)}&page=${currentPage}&per_page=${currentPerPage}`;
+
+            // Show loading indicator
+            searchResultsList.innerHTML = '<div class="p-4 text-center"><div class="inline-block animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600"></div><span class="ml-2">Searching...</span></div>';
+            searchResults.classList.remove('hidden');
+
+            // Fetch search results
+            fetch(searchUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(`Search returned ${data.total} results`);
+
+                    // Check for error in response
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    // Render results
+                    renderSearchResults(data);
+
+                    // Render pagination if needed
+                    if (data.total_pages > 1) {
+                        renderPagination(data);
+                        searchPagination.classList.remove('hidden');
+                    } else {
+                        searchPagination.classList.add('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error(`Search error: ${error.message}`);
+                    searchResultsList.innerHTML = `
+                        <div class="px-4 py-2 text-sm text-red-500">
+                            Error: ${error.message}
+                        </div>
+                    `;
+                });
+        }
+
+        // Render search results
+        function renderSearchResults(data) {
+            const results = data.results || [];
+            const query = data.query || currentQuery;
+
+            console.log(`Rendering ${results.length} search results for query: "${query}"`);
+
+            if (results.length > 0) {
+                searchResultsList.innerHTML = results.map((result, index) => {
+                    // Build breadcrumb from section path
+                    const breadcrumb = result.section_path && result.section_path.length > 1
+                        ? result.section_path.slice(0, -1).join(' > ')
+                        : '';
+
+                    // Get context paragraphs with better handling
+                    let contextHtml = '';
+                    if (result.context_paragraphs && result.context_paragraphs.length > 0) {
+                        contextHtml = result.context_paragraphs.map(para => {
+                            if (!para) return '';
+
+                            if (para.is_match) {
+                                // Check if highlighted version exists
+                                if (para.highlighted && para.highlighted.includes('<mark>')) {
+                                    return `<div class="search-result-match">${para.highlighted}</div>`;
+                                } else {
+                                    // Fallback to manual highlighting if server didn't provide it
+                                    const highlightedText = highlightText(para.text, query);
+                                    return `<div class="search-result-match">${highlightedText}</div>`;
+                                }
+                            } else {
+                                return `<div class="text-gray-600 text-sm">${para.text}</div>`;
+                            }
+                        }).join('');
+                    }
+
+                    return `
+                        <a href="/?module=${encodeURIComponent(document.getElementById('moduleSelect').value)}&section=${encodeURIComponent(result.section)}"
+                           class="block search-result-item">
+                            <div class="search-result-section">${result.section}</div>
+                            ${breadcrumb ? `<div class="search-result-breadcrumb">${breadcrumb}</div>` : ''}
+                            <div class="search-result-context">${contextHtml}</div>
+                        </a>
+                    `;
+                }).join('');
+            } else {
+                // Enhanced no results message with suggestions
+                searchResultsList.innerHTML = `
+                    <div class="px-4 py-4 text-sm text-gray-500">
+                        <div class="text-center mb-3">No results found for "${query}"</div>
+                        <div class="text-xs">
+                            <p class="font-medium mb-1">Suggestions:</p>
+                            <ul class="list-disc pl-5">
+                                <li>Check your spelling</li>
+                                <li>Try more general keywords</li>
+                                <li>Try different keywords</li>
+                                <li>Try searching in all sections</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Helper function to highlight text if server didn't do it
+        function highlightText(text, query) {
+            if (!text || !query) return text;
+
+            // Remove quotes for phrase search
+            let searchTerms = query;
+            if (searchTerms.startsWith('"') && searchTerms.endsWith('"')) {
+                searchTerms = searchTerms.substring(1, searchTerms.length - 1);
+            }
+
+            // For phrase search, highlight the whole phrase
+            const regex = new RegExp(escapeRegExp(searchTerms), 'gi');
+            return text.replace(regex, match => `<mark>${match}</mark>`);
+        }
+
+        // Helper function to escape special characters in regex
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // Render pagination
+        function renderPagination(data) {
+            const totalPages = data.total_pages || 1;
+            const currentPage = data.page || 1;
+
+            let paginationHtml = '';
+
+            // Previous button
+            paginationHtml += `
+                <button onclick="changePage(${Math.max(1, currentPage - 1)})"
+                        class="page-button"
+                        ${currentPage === 1 ? 'disabled' : ''}>
+                    &laquo;
+                </button>
+            `;
+
+            // Page numbers
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, startPage + 4);
+
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHtml += `
+                    <button onclick="changePage(${i})"
+                            class="page-button ${i === currentPage ? 'active' : ''}">
+                        ${i}
+                    </button>
+                `;
+            }
+
+            // Next button
+            paginationHtml += `
+                <button onclick="changePage(${Math.min(totalPages, currentPage + 1)})"
+                        class="page-button"
+                        ${currentPage === totalPages ? 'disabled' : ''}>
+                    &raquo;
+                </button>
+            `;
+
+            searchPagination.innerHTML = paginationHtml;
+        }
+
+        // Change page function (called from pagination buttons)
+        function changePage(page) {
+            currentPage = page;
+            performSearch();
+            // Scroll back to top of results
+            searchResults.scrollTop = 0;
+        }
+
+        // Make changePage function global for onclick handlers
+        window.changePage = changePage;
+
+        // Hide search results when clicking outside
+        document.addEventListener('click', function(e) {
+            const isSearchRelated = searchResults.contains(e.target) ||
+                                   searchInput.contains(e.target) ||
+                                   e.target === searchInput;
+
+            if (!isSearchRelated) {
+                searchResults.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
